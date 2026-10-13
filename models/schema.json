@@ -1,0 +1,172 @@
+{
+ "multi_value_items": {
+  "Recycling": [
+   "Glass",
+   "Metal",
+   "Paper",
+   "Plastic"
+  ],
+  "Cooking_With": [
+   "Airfryer",
+   "Grill",
+   "Microwave",
+   "Oven",
+   "Stove"
+  ]
+ },
+ "feature_columns": [
+  "Body Type",
+  "How Often Shower",
+  "Social Activity",
+  "Monthly Grocery Bill",
+  "Frequency of Traveling by Air",
+  "Vehicle Monthly Distance Km",
+  "Waste Bag Size",
+  "Waste Bag Weekly Count",
+  "How Long TV PC Daily Hour",
+  "How Many New Clothes Monthly",
+  "How Long Internet Daily Hour",
+  "Energy efficiency",
+  "Recycling_Glass",
+  "Recycling_Metal",
+  "Recycling_Paper",
+  "Recycling_Plastic",
+  "Cooking_With_Airfryer",
+  "Cooking_With_Grill",
+  "Cooking_With_Microwave",
+  "Cooking_With_Oven",
+  "Cooking_With_Stove",
+  "Sex_male",
+  "Diet_pescatarian",
+  "Diet_vegan",
+  "Diet_vegetarian",
+  "Heating Energy Source_electricity",
+  "Heating Energy Source_natural gas",
+  "Heating Energy Source_wood",
+  "Transport_public",
+  "Transport_walk/bicycle",
+  "Vehicle Type_diesel",
+  "Vehicle Type_electric",
+  "Vehicle Type_hybrid",
+  "Vehicle Type_lpg",
+  "Vehicle Type_petrol"
+ ],
+ "ordinal_options": {
+  "Frequency of Traveling by Air": [
+   "never",
+   "rarely",
+   "frequently",
+   "very frequently"
+  ],
+  "Waste Bag Size": [
+   "small",
+   "medium",
+   "large",
+   "extra large"
+  ],
+  "How Often Shower": [
+   "less frequently",
+   "daily",
+   "more frequently",
+   "twice a day"
+  ],
+  "Energy efficiency": [
+   "No",
+   "Sometimes",
+   "Yes"
+  ],
+  "Social Activity": [
+   "never",
+   "sometimes",
+   "often"
+  ],
+  "Body Type": [
+   "underweight",
+   "normal",
+   "overweight",
+   "obese"
+  ]
+ },
+ "nominal_options": {
+  "Sex": [
+   "female",
+   "male"
+  ],
+  "Diet": [
+   "omnivore",
+   "pescatarian",
+   "vegan",
+   "vegetarian"
+  ],
+  "Heating Energy Source": [
+   "coal",
+   "electricity",
+   "natural gas",
+   "wood"
+  ],
+  "Transport": [
+   "private",
+   "public",
+   "walk/bicycle"
+  ],
+  "Vehicle Type": [
+   "No_Vehicle",
+   "diesel",
+   "electric",
+   "hybrid",
+   "lpg",
+   "petrol"
+  ]
+ },
+ "numeric_ranges": {
+  "Monthly Grocery Bill": [
+   50.0,
+   299.0
+  ],
+  "Vehicle Monthly Distance Km": [
+   0.0,
+   9999.0
+  ],
+  "Waste Bag Weekly Count": [
+   1.0,
+   7.0
+  ],
+  "How Long TV PC Daily Hour": [
+   0.0,
+   24.0
+  ],
+  "How Many New Clothes Monthly": [
+   0.0,
+   50.0
+  ],
+  "How Long Internet Daily Hour": [
+   0.0,
+   24.0
+  ]
+ },
+ "numeric_defaults": {
+  "Monthly Grocery Bill": 173.0,
+  "Vehicle Monthly Distance Km": 823.0,
+  "Waste Bag Weekly Count": 4.0,
+  "How Long TV PC Daily Hour": 12.0,
+  "How Many New Clothes Monthly": 25.0,
+  "How Long Internet Daily Hour": 12.0
+ },
+ "distance_by_transport": {
+  "private": [
+   3,
+   9999,
+   5175
+  ],
+  "public": [
+   0,
+   2000,
+   1022
+  ],
+  "walk/bicycle": [
+   0,
+   99,
+   50
+  ]
+ }
+}
