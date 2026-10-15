@@ -20,7 +20,11 @@ carbon_dashboard/
   models/            best_model.json, schema.json, SHAP sample and values, results.json (already included)
   preprocessing.py   shared cleaning and encoding (ordinal + one-hot)
   train_models.py    trains the 3 tuned models, keeps the best
-  app.py             the Streamlit dashboard (model, SHAP and page logic)
+  app.py             entry point: page config and routing (intro first, then dashboard)
+  landing_page.py    intro page (one line, calls landing.py)
+  landing.py         the scroll-based landing page: CSS, screens, FEEDBACK_URL and IMAGES settings
+  dashboard.py       the dashboard (model, SHAP and page logic; was app.py before the landing page)
+  assets/            put your own photos here (see IMAGES in landing.py)
   ui.py              styling and HTML cards (glass look); presentation only
   .streamlit/config.toml   theme and layout settings
   requirements.txt
@@ -43,7 +47,7 @@ It takes about a minute and should print XGBoost MAE=77.22.
 ## Deploy (Streamlit Community Cloud)
 
 1. Push this folder to a GitHub repo, including `models/` and the `.streamlit` folder (all small).
-2. On share.streamlit.io choose the repo and set the main file to `app.py`.
+2. On share.streamlit.io choose the repo and keep the main file as `app.py`.
 3. Keep `streamlit==1.65.0` pinned (the styling depends on it).
 
 ## Encoding used (important for the report)
@@ -76,3 +80,10 @@ walk/bicycle 0 to 99 km, private 3 to 9,999 km). Recycling and Cooking with can 
 - Sex and Body Type rank high in SHAP, most likely a data generation artefact. The dashboard keeps
   them in the model but leaves them out of the "factors you can change" advice.
 - SHAP shows what the model learned, not cause and effect.
+
+## Landing page
+- Opens first at `/`. The dashboard is at `/dashboard`. "Skip intro", "Go to dashboard" and "Proceed to dashboard" all open it.
+- Module cards and "Start prediction" open a chosen dashboard page (the intro stores the page name in `st.session_state["_goto"]`).
+- Feedback form link: set `FEEDBACK_URL` at the top of `landing.py`. While empty, the buttons are disabled placeholders.
+- Photos: copy files into `assets/` and fill `IMAGES` in `landing.py` (hero, why, action, feedback). Without them the built-in vector art is used.
+- Browsers without CSS scroll-driven animation show everything without the reveal effect.
