@@ -33,7 +33,7 @@ import ui
 # ═════════════════════════════ CONFIGURE HERE ═════════════════════════════
 # TODO (feedback form): paste the link of your User Acceptance Test form between the quotes.
 # While it is empty, the feedback buttons show as a clearly marked placeholder.
-FEEDBACK_URL = ""
+FEEDBACK_URL = "https://forms.cloud.microsoft/r/0DiMxG1xhK" #Link for UAT Survey Form
 
 # TODO (images): put your files in the assets/ folder and write the file name here, for example
 #   "hero": "assets/hero.jpg"
