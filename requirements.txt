@@ -6,3 +6,4 @@ lightgbm>=4.5
 shap>=0.48
 joblib>=1.4
 streamlit==1.65.0
+requests>=2.31
