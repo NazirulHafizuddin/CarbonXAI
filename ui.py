@@ -29,6 +29,12 @@ CSS = """
   font-feature-settings: 'cv11', 'ss03'; -webkit-font-smoothing: antialiased;
 }
 .stApp { font-weight: 400; }
+/* Streamlit silently attaches a "link to this heading" icon + anchor to every
+   markdown heading (h1-h6) on every page. It is normally invisible, but certain
+   layouts (a heading turned into a flex container, a heading that wraps to two
+   lines) can make that hidden sibling participate in layout and become visible.
+   Hiding it app-wide, once, here, keeps every page's headings in plain text flow. */
+[data-testid="stHeaderActionElements"] { display:none !important; }
 .stApp {
   background:
     radial-gradient(900px 520px at 88% -8%, #ffffff 0%, rgba(255,255,255,0) 60%),
@@ -107,6 +113,16 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 .cx-pink .lvl { position:relative; display:inline-block; margin-top:10px; padding:5px 14px; border-radius:999px; font-size:12.5px; font-weight:700;
   background: rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.6); letter-spacing:.04em; }
 
+.cx-pink.lvl-low { background: linear-gradient(165deg, #9BF7B0 0%, #3DDC66 48%, #18A845 100%);
+  box-shadow: 0 30px 50px -28px rgba(24,168,69,.75), inset 0 1px 0 rgba(255,255,255,.7); }
+.cx-pink.lvl-medium { background: linear-gradient(165deg, #FFF3A3 0%, #FFDE3D 48%, #F5C518 100%);
+  box-shadow: 0 30px 50px -28px rgba(245,197,24,.75), inset 0 1px 0 rgba(255,255,255,.7); color:#1A1A12; }
+.cx-pink.lvl-medium .glass { background: rgba(0,0,0,.08); border:1px solid rgba(0,0,0,.18); }
+.cx-pink.lvl-medium .lvl { background: rgba(0,0,0,.12); border:1px solid rgba(0,0,0,.22); color:#1A1A12; }
+.cx-pink.lvl-medium .cap, .cx-pink.lvl-medium .lab { color:#1A1A12; }
+.cx-pink.lvl-high { background: linear-gradient(165deg, #FFA3A3 0%, #FF5050 48%, #E51C1C 100%);
+  box-shadow: 0 30px 50px -28px rgba(229,28,28,.75), inset 0 1px 0 rgba(255,255,255,.7); }
+
 /* ---------- dark panels ---------- */
 .st-key-controls { background: linear-gradient(180deg,#171A17 0%,#0C0E0C 100%); border-radius: 32px; padding: 20px 22px 12px 22px;
   box-shadow: 0 30px 50px -30px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.08); }
@@ -157,13 +173,25 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
   box-shadow: 0 26px 40px -24px rgba(124,154,24,.55), inset 0 1px 0 rgba(255,255,255,.28); }
 .cx-tile .art { position:absolute; left:-10%; right:-10%; bottom:-6%; height:62%; filter: blur(9px); opacity:.95; }
 .cx-tile .t { position:relative; font-size:18px; font-weight:600; line-height:1.2; color:#fff; max-width: 16ch; }
-.cx-tile .s { position:relative; font-size:13px; color:#D5E58F; margin-top:6px; }
+.cx-tile .s { position:relative; font-size:13px; color:rgba(255,255,255,.82); margin-top:6px; }
 .cx-tile .glass { position:absolute; left:12px; right:12px; bottom:12px; padding:11px 16px; border-radius:20px; display:flex; align-items:baseline; justify-content:space-between;
   background: rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .cx-tile .sv { font-size:28px; font-weight:600; letter-spacing:-.025em; }
-.cx-tile .un { font-size:12px; color:#E3EFB0; }
+.cx-tile .un { font-size:12px; color:rgba(255,255,255,.72); }
 .cx-tile.empty { background: linear-gradient(168deg,#262A26,#121412); border-color: rgba(255,255,255,.1); box-shadow:none; }
 .cx-tile.empty .t { color:#C9CEC9; } .cx-tile.empty .s { color:#7C827C; }
+
+/* ---------- tile colour family (lever / insight cards) ---------- */
+.cx-tile.c-green { background: linear-gradient(168deg, #8FE3A1 0%, #3FBE69 52%, #1E8A47 100%);
+  border-color: rgba(143,227,161,.4); box-shadow: 0 26px 40px -24px rgba(31,138,71,.55), inset 0 1px 0 rgba(255,255,255,.28); }
+.cx-tile.c-blue { background: linear-gradient(168deg, #8FD3F4 0%, #3E9FD9 52%, #1C6FA8 100%);
+  border-color: rgba(143,211,244,.4); box-shadow: 0 26px 40px -24px rgba(28,111,168,.55), inset 0 1px 0 rgba(255,255,255,.28); }
+.cx-tile.c-pink { background: linear-gradient(168deg, #FFB6CD 0%, #FF7DA6 52%, #D94C79 100%);
+  border-color: rgba(255,182,205,.4); box-shadow: 0 26px 40px -24px rgba(217,76,121,.55), inset 0 1px 0 rgba(255,255,255,.28); }
+.cx-tile.c-teal { background: linear-gradient(168deg, #7FE8D0 0%, #2EC4A6 52%, #15876E 100%);
+  border-color: rgba(127,232,208,.4); box-shadow: 0 26px 40px -24px rgba(21,135,110,.55), inset 0 1px 0 rgba(255,255,255,.28); }
+.cx-tile.c-violet { background: linear-gradient(168deg, #C7C3FF 0%, #8B7CF6 52%, #5B4BC4 100%);
+  border-color: rgba(199,195,255,.4); box-shadow: 0 26px 40px -24px rgba(91,75,196,.55), inset 0 1px 0 rgba(255,255,255,.28); }
 .cx-gauge { text-align:center; }
 .cx-gauge .gl { font-size:13px; color:#9AA09A; margin-top:-6px; }
 .cx-gauge .gv { font-size:34px; font-weight:600; letter-spacing:-.02em; }
@@ -173,7 +201,7 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 /* ---------- other pages ---------- */
 .cx-models { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:18px; }
 .cx-model { background:#fff; border-radius:28px; padding:22px 26px; box-shadow: 0 22px 44px -26px rgba(20,22,20,.30); position:relative; overflow:hidden; }
-.cx-model.best { color:#fff; background: linear-gradient(165deg, #FFB6CD 0%, #FF7DA6 48%, #FF5088 100%); box-shadow: 0 30px 50px -28px rgba(255,80,136,.7), inset 0 1px 0 rgba(255,255,255,.7); }
+.cx-model.best { color:#fff; background: linear-gradient(165deg, #9FDBF7 0%, #4FAEE6 48%, #2680C2 100%); box-shadow: 0 30px 50px -28px rgba(38,128,194,.7), inset 0 1px 0 rgba(255,255,255,.7); }
 .cx-model.best .cx-big { color:#fff; }
 .cx-model.best .cx-label, .cx-model.best .cx-big small, .cx-model.best .cx-note { color: rgba(255,255,255,.92); }
 .cx-model .cx-big { font-size:50px; }
@@ -183,7 +211,7 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 .cx-hbar { display:grid; grid-template-columns: 170px 1fr 70px; align-items:center; gap:12px; padding:6px 0; font-size:14px; }
 .cx-hbar .tr { height:12px; background:#ECEDEF; border-radius:7px; position:relative; }
 .cx-hbar .f { position:absolute; left:0; top:0; bottom:0; border-radius:7px; background:#0F1110; }
-.cx-hbar .f.b { background: linear-gradient(90deg,#FF7DA6,#FF5088); }
+.cx-hbar .f.b { background: linear-gradient(90deg,#4FAEE6,#2680C2); }
 .cx-dark { background: linear-gradient(180deg,#141714 0%,#090A09 100%); color:#fff; border-radius:34px; padding:28px 32px; margin-top:18px;
   box-shadow: 0 40px 70px -40px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.07); }
 .cx-dark .cx-label { color:#9AA09A; }
@@ -194,6 +222,18 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 .cx-dbar .v { font-size:13.5px; color:#C9CEC9; font-variant-numeric: tabular-nums; }
 .cx-warn { background: rgba(255,255,255,.7); border:1px solid rgba(15,17,16,.08); border-radius:22px; padding:16px 20px; font-size:14px; color:#3A3F3B; line-height:1.55; margin-top:16px; backdrop-filter: blur(12px); }
 .cx-rank { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:16px; margin-top:18px; }
+
+/* ---------- area / trend chart ---------- */
+.cx-areawrap { width:100%; }
+.cx-areawrap svg { width:100%; height:auto; display:block; overflow:visible; }
+.cx-areawrap .grid { stroke: rgba(255,255,255,.10); stroke-width:1; stroke-dasharray:3 5; }
+.cx-areawrap .ytick { fill:#7C827C; font-size:9.5px; font-family:'Inter',sans-serif; }
+.cx-areawrap .xtick { fill:#9AA09A; font-size:9.5px; font-family:'Inter',sans-serif; }
+.cx-areawrap .line { fill:none; stroke:#C5E04F; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.cx-areawrap .dot { fill:#0C0E0C; stroke:#C5E04F; stroke-width:2.4; }
+.cx-areawrap .hit { fill:transparent; cursor:pointer; }
+.cx-areawrap .hit:hover + .hovdot { opacity:1; }
+.cx-areawrap .hovdot { fill:#0C0E0C; stroke:#C5E04F; stroke-width:2.2; opacity:0; pointer-events:none; transition:opacity .08s; }
 
 @media (max-width: 1100px) {
   .cx-grid { grid-template-columns: 1fr; } .cx-main, .cx-pinkwrap, .cx-shapcard { grid-column: auto; grid-row: auto; }
@@ -260,15 +300,31 @@ def pink_art():
             "<circle cx='130' cy='140' r='8' fill='#fff'/></svg>")
 
 
+TILE_COLORS = [
+    ("c-green", "#D7FADF", "#1E8A47"),
+    ("c-blue", "#D9F0FC", "#1C6FA8"),
+    ("c-pink", "#FFE3EC", "#D94C79"),
+    ("c-teal", "#D4FBF2", "#15876E"),
+    ("c-violet", "#E8E5FF", "#5B4BC4"),
+]
+
+
+def tile_color_class(i):
+    """The colour-variant CSS class for the i-th lever / insight tile, cycling
+    through a cool, friendly palette (green, blue, pink, teal, violet)."""
+    return TILE_COLORS[i % len(TILE_COLORS)][0]
+
+
 def tile_art(i):
     shapes = [
         "M0,100 L0,60 C40,40 70,20 110,38 C150,56 170,10 220,34 L260,70 L260,100 Z",
         "M0,100 L0,70 L60,50 L100,22 L140,56 L190,30 L260,66 L260,100 Z",
         "M0,100 L0,52 C30,64 60,68 90,46 C120,22 150,30 176,52 C206,76 232,60 260,40 L260,100 Z",
     ]
+    _, light, dark = TILE_COLORS[i % len(TILE_COLORS)]
     return ("<svg class='art' viewBox='0 0 260 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'>"
-            f"<defs><linearGradient id='tg{i}' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#E4F58A'/>"
-            f"<stop offset='1' stop-color='#6F8C14'/></linearGradient></defs>"
+            f"<defs><linearGradient id='tg{i}' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='{light}'/>"
+            f"<stop offset='1' stop-color='{dark}'/></linearGradient></defs>"
             f"<path d='{shapes[i % 3]}' fill='url(#tg{i})'/></svg>")
 
 
@@ -284,3 +340,103 @@ def gauge(frac, value_text, unit_text, label_text):
             "<line x1='100' y1='14' x2='100' y2='24' stroke='rgba(255,255,255,.5)' stroke-width='2'/>"
             f"<circle cx='{x:.1f}' cy='{y:.1f}' r='6' fill='#fff'/></svg>"
             f"<div class='gv'>{value_text}<small>{unit_text}</small></div><div class='gl'>{label_text}</div></div>")
+
+
+def _nice_step(raw_step):
+    """Round a raw axis step up to a human-friendly 1 / 2 / 5 / 10 x 10^n value,
+    so gridlines land on round numbers like 0, 50K, 100K instead of 0, 46K, 92K."""
+    if raw_step <= 0:
+        return 1.0
+    exp = math.floor(math.log10(raw_step))
+    frac = raw_step / (10 ** exp)
+    nice = 1 if frac <= 1 else 2 if frac <= 2 else 5 if frac <= 5 else 10
+    return nice * (10 ** exp)
+
+
+def area_chart(x_labels, values, value_fmt=None, y_gridlines=4, x_tick_every=5, highlight_last=True):
+    """A hand-rolled SVG area/trend chart in the dashboard's dark-panel, lime-accent
+    theme (same visual family as the gauge and bar components above). `x_labels` are
+    shown along the bottom (e.g. years); `values` is the matching numeric series.
+    """
+    value_fmt = value_fmt or (lambda v: f"{v:,.0f}")
+    n = len(values)
+    if n < 2:
+        return "<div class='cx-areawrap'></div>"
+
+    W, H = 760.0, 230.0
+    pad_l, pad_r, pad_t, pad_b = 54.0, 16.0, 18.0, 28.0
+    plot_w, plot_h = W - pad_l - pad_r, H - pad_t - pad_b
+
+    # y-axis always starts at 0, with round gridline steps (0, 50K, 100K, ...)
+    # rather than padded raw min/max, so the chart reads cleanly at a glance.
+    vmin = 0.0
+    raw_top = max(values) * 1.12 if max(values) > 0 else 1.0
+    step = _nice_step(raw_top / y_gridlines)
+    vmax = step * math.ceil(raw_top / step)
+    if vmax <= vmin:
+        vmax = vmin + step
+    span = vmax - vmin
+
+    def xf(i):
+        return pad_l + (i / (n - 1)) * plot_w
+
+    def yf(v):
+        return pad_t + (1 - (v - vmin) / span) * plot_h
+
+    pts = [(xf(i), yf(v)) for i, v in enumerate(values)]
+
+    # gridlines + y-axis labels, one per round step from 0 up to vmax
+    grid_svg, ytick_svg = [], []
+    n_steps = int(round(vmax / step))
+    for g in range(n_steps + 1):
+        gv = vmin + step * g
+        gy = yf(gv)
+        grid_svg.append(f"<line class='grid' x1='{pad_l:.1f}' y1='{gy:.1f}' x2='{W - pad_r:.1f}' y2='{gy:.1f}'/>")
+        ytick_svg.append(f"<text class='ytick' x='{pad_l - 10:.1f}' y='{gy + 4:.1f}' text-anchor='end'>"
+                         f"{value_fmt(gv)}</text>")
+
+    # x-axis labels: every `x_tick_every`-th point, plus the last one, but drop any
+    # regular tick that would land too close (in pixels) to the final label so the
+    # last two years never collide.
+    min_gap_px = 30.0
+    candidate_idx = [i for i in range(0, n, x_tick_every)]
+    if candidate_idx and candidate_idx[-1] != n - 1:
+        candidate_idx.append(n - 1)
+    while len(candidate_idx) >= 2 and (xf(candidate_idx[-1]) - xf(candidate_idx[-2])) < min_gap_px:
+        del candidate_idx[-2]
+
+    xtick_svg = []
+    for i in candidate_idx:
+        xtick_svg.append(f"<text class='xtick' x='{xf(i):.1f}' y='{H - 6:.1f}' "
+                         f"text-anchor='middle'>{escape(str(x_labels[i]))}</text>")
+
+    line_d = "M " + " L ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+    base_y = pad_t + plot_h
+    area_d = line_d + f" L {pts[-1][0]:.1f},{base_y:.1f} L {pts[0][0]:.1f},{base_y:.1f} Z"
+
+    last_x, last_y = pts[-1]
+    dot_svg = f"<circle class='dot' cx='{last_x:.1f}' cy='{last_y:.1f}' r='5'/>" if highlight_last else ""
+
+    # per-point hover targets: a wide invisible hit circle (with a native tooltip
+    # showing the year and value) plus a themed dot that fades in on hover via CSS
+    hover_svg = []
+    for i, (px, py) in enumerate(pts):
+        tip = f"{escape(str(x_labels[i]))}: {escape(value_fmt(values[i]))}"
+        hover_svg.append(
+            f"<circle class='hit' cx='{px:.1f}' cy='{py:.1f}' r='10'><title>{tip}</title></circle>"
+            f"<circle class='hovdot' cx='{px:.1f}' cy='{py:.1f}' r='4.5'/>"
+        )
+
+    return (
+        f"<div class='cx-areawrap'><svg viewBox='0 0 {W:.0f} {H:.0f}' xmlns='http://www.w3.org/2000/svg'>"
+        "<defs><linearGradient id='cxAreaFill' x1='0' y1='0' x2='0' y2='1'>"
+        "<stop offset='0' stop-color='#C5E04F' stop-opacity='.42'/>"
+        "<stop offset='1' stop-color='#C5E04F' stop-opacity='0'/></linearGradient></defs>"
+        + "".join(grid_svg)
+        + f"<path d='{area_d}' fill='url(#cxAreaFill)'/>"
+        + f"<path class='line' d='{line_d}'/>"
+        + dot_svg
+        + "".join(ytick_svg) + "".join(xtick_svg)
+        + "".join(hover_svg)
+        + "</svg></div>"
+    )

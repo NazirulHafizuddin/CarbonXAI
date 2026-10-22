@@ -15,13 +15,13 @@ import streamlit as st
 
 st.set_page_config(
     page_title="CarbonXAI | Carbon Emission Prediction",
-    page_icon="🌿",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
 pages = [
-    st.Page("landing_page.py", title="Intro", icon="🌿", default=True),
-    st.Page("dashboard.py", title="Dashboard", icon="📊", url_path="dashboard"),
+    st.Page("landing_page.py", title="Intro", icon="", default=True),
+    st.Page("dashboard.py", title="Dashboard", icon="", url_path="dashboard"),
 ]
 st.navigation(pages, position="hidden").run()

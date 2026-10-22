@@ -12,6 +12,7 @@ import json
 import joblib
 import numpy as np
 import pandas as pd
+import requests
 import streamlit as st
 import shap
 from xgboost import XGBRegressor
@@ -50,6 +51,67 @@ except FileNotFoundError:
              "then restart the dashboard.")
     st.stop()
 
+SECTOR_LABEL = {
+    "energy": "Energy", "industrial_processes": "Industrial processes",
+    "agriculture": "Agriculture", "waste": "Waste", "lulucf": "Land use & forestry",
+}
+# Independently verified 2026-10-22 against ourworldindata.org/co2/country/malaysia.
+# CO2 only (not CO2e) and a different methodology from the live DOSM series below,
+# so it is used only if the live government API cannot be reached.
+FALLBACK_REF = {"year": 2024, "per_capita_kg_year": 8160.0, "metric": "CO2 (not CO2e)",
+                "source": "Our World in Data, 2024"}
+
+
+@st.cache_data(ttl=60 * 60 * 24, show_spinner=False)
+def load_malaysia_ghg():
+    """National GHG inventory and population from the official data.gov.my / DOSM
+    open data API, combined into a per-capita reference figure.
+    Source: Ministry of Natural Resources & Environmental Sustainability (NRES) /
+    Dept. of Statistics Malaysia, reported to the UNFCCC. Licence: CC BY 4.0."""
+    try:
+        g = requests.get("https://api.data.gov.my/data-catalogue",
+                          params={"id": "ghg_emissions"}, timeout=10).json()
+        ghg = pd.DataFrame(g)
+        ghg["year"] = pd.to_datetime(ghg["date"]).dt.year
+
+        p = requests.get("https://api.data.gov.my/data-catalogue",
+                          params={"id": "population_malaysia"}, timeout=10).json()
+        pop = pd.DataFrame(p)
+        pop["year"] = pd.to_datetime(pop["date"]).dt.year
+        pop = pop[(pop["sex"] == "both") & (pop["age"] == "overall")
+                  & (pop["ethnicity"] == "overall")]
+
+        totals = ghg[ghg["source"] == "total"].dropna(subset=["emissions"]).sort_values("year")
+        latest_year = int(totals["year"].max())
+        total_gg = float(totals.loc[totals["year"] == latest_year, "emissions"].iloc[0])
+        series_years = totals["year"].tolist()
+        series_values = totals["emissions"].tolist()
+
+        pop_row = pop[pop["year"] == latest_year]
+        if pop_row.empty:                                   # population series may lag
+            pop_row = pop[pop["year"] == pop["year"].max()]
+        pop_thousands = float(pop_row["population"].iloc[0])
+        population = pop_thousands * 1_000
+
+        sectors = (ghg[(ghg["year"] == latest_year)
+                       & ghg["source"].isin(SECTOR_LABEL)]
+                   .set_index("source")["emissions"].to_dict())
+
+        total_kg = total_gg * 1_000_000                     # 1 Gg = 1,000,000 kg
+        per_capita_kg_year = total_kg / population
+
+        return {
+            "ok": True, "year": latest_year,
+            "total_gg_co2e": total_gg, "population": population,
+            "per_capita_kg_year": per_capita_kg_year,
+            "per_capita_kg_month": per_capita_kg_year / 12,
+            "sectors": sectors,
+            "series_years": series_years, "series_values": series_values,
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
 best_name = results["best_model"]
 mae = results["metrics"][best_name]["MAE"]
 avg_pred = float(np.ravel(explainer.expected_value)[0])
@@ -57,6 +119,13 @@ ordinal_opts = schema["ordinal_options"]
 nominal_opts = schema["nominal_options"]
 num_range = schema["numeric_ranges"]
 num_default = schema["numeric_defaults"]
+
+# Slider bounds the UI should expose that differ from the training data's own
+# min/max (schema["numeric_ranges"]). Widening a bound here lets a user enter a
+# value the model never saw during training, so a prediction out past the
+# dataset's original range (grocery bill was 50-299) is an extrapolation, not
+# an interpolation, and should be read with proportionally less confidence.
+SLIDER_RANGE_OVERRIDES = {"Monthly Grocery Bill": (0, 1000)}
 
 
 def label(v):
@@ -74,7 +143,7 @@ def grouped_global(sv, columns):
 
 
 # ─────────────────────────── top bar ───────────────────────────
-PAGES = ["Prediction", "Model comparison", "SHAP explanations", "Sustainability insights"]
+PAGES = ["Prediction", "Model comparison", "SHAP explanations", "Sustainability insights", "Malaysia context"]
 c_left, c_mid, c_right = st.columns([1.1, 2.6, 1.1], vertical_alignment="center")
 with c_left:
     st.markdown(ui.brand(), unsafe_allow_html=True)
@@ -90,6 +159,22 @@ with c_right:
 
 # ═════════════════════════ PREDICTION ═════════════════════════
 if page == "Prediction":
+    # The page router above only re-runs this whole block while "Prediction" is the
+    # active tab; Streamlit drops a widget's session_state entry the moment it is not
+    # instantiated on a run, which is what reset every field to its default as soon as
+    # you switched tabs and came back. `_pred_shadow` is a plain dict (not a widget key
+    # itself), so it survives those runs; every input restores from it before being
+    # drawn and re-saves into it right after, so a value typed once sticks across pages.
+    _pred_shadow = st.session_state.setdefault("_pred_shadow", {})
+
+    def _restore(key):
+        if key not in st.session_state and key in _pred_shadow:
+            st.session_state[key] = _pred_shadow[key]
+
+    def _remember(key, value):
+        _pred_shadow[key] = value
+        return value
+
     left, right = st.columns([4.3, 7.7], gap="large")
 
     with left:
@@ -98,48 +183,63 @@ if page == "Prediction":
                             "with the reasons behind it."), unsafe_allow_html=True)
 
         def slider(name, text, key):
-            lo, hi = int(num_range[name][0]), int(num_range[name][1])
-            return st.slider(text, lo, hi, int(num_default[name]), key=key)
+            _restore(key)
+            lo, hi = SLIDER_RANGE_OVERRIDES.get(name, (int(num_range[name][0]), int(num_range[name][1])))
+            default = min(max(int(num_default[name]), lo), hi)
+            return _remember(key, st.slider(text, lo, hi, default, key=key))
 
         def ordinal(name, text, key, default_idx=1):
+            _restore(key)
             opts = ordinal_opts[name]
-            return st.select_slider(text, options=opts, value=opts[default_idx],
-                                    format_func=label, key=key)
+            return _remember(key, st.select_slider(text, options=opts, value=opts[default_idx],
+                                                    format_func=label, key=key))
 
         with st.container(key="controls"):
             t_travel, t_home, t_life, t_waste = st.tabs(["Travel", "Home", "Lifestyle", "Waste"])
 
             with t_travel:
-                transport = st.selectbox("Transport mode", nominal_opts["Transport"],
-                                         index=nominal_opts["Transport"].index("private"),
-                                         format_func=label, key="transport")
+                _restore("transport")
+                transport = _remember("transport", st.selectbox(
+                    "Transport mode", nominal_opts["Transport"],
+                    index=nominal_opts["Transport"].index("private"),
+                    format_func=label, key="transport"))
                 has_vehicle = transport == "private"
                 d_lo, d_hi, d_mid = schema["distance_by_transport"][transport]
-                distance = st.number_input("Monthly distance traveled (km)", min_value=d_lo, max_value=d_hi,
-                                           value=d_mid, step=1 if d_hi <= 100 else 50, key=f"dist_{transport}")
+                dist_key = f"dist_{transport}"
+                _restore(dist_key)
+                distance = _remember(dist_key, st.number_input(
+                    "Monthly distance traveled (km)", min_value=d_lo, max_value=d_hi,
+                    value=d_mid, step=1 if d_hi <= 100 else 50, key=dist_key))
                 if has_vehicle:
-                    vehicle_type = st.selectbox(
+                    _restore("vehicle")
+                    vehicle_type = _remember("vehicle", st.selectbox(
                         "Vehicle type", [v for v in nominal_opts["Vehicle Type"] if v != "No_Vehicle"],
-                        format_func=label, key="vehicle")
+                        format_func=label, key="vehicle"))
                 else:
                     vehicle_type = st.selectbox("Vehicle type", ["No_Vehicle"], disabled=True,
                                                 format_func=lambda v: "None / Not applicable", key="vehicle_na")
                     st.caption(f"With {label(transport).lower()} there is no private vehicle. "
                                f"Distance is limited to 0 to {d_hi:,} km, as in the dataset.")
-                air_travel = ordinal("Frequency of Traveling by Air", "Flying", "air")
+                air_travel = ordinal("Frequency of Traveling by Air", "Frequency of Traveling by Air", "air")
 
             with t_home:
-                heating = st.selectbox("Heating energy source", nominal_opts["Heating Energy Source"],
-                                       format_func=label, key="heating")
+                _restore("heating")
+                heating = _remember("heating", st.selectbox(
+                    "Heating energy source", nominal_opts["Heating Energy Source"],
+                    format_func=label, key="heating"))
                 energy_eff = ordinal("Energy efficiency", "Energy efficient equipment", "eff")
                 tv_pc = slider("How Long TV PC Daily Hour", "TV / PC hours per day", "tv")
                 internet = slider("How Long Internet Daily Hour", "Internet hours per day", "net")
-                cooking = st.multiselect("Cooking with (leave empty for none)",
-                                         ["Airfryer", "Grill", "Microwave", "Oven", "Stove"], key="cook")
+                _restore("cook")
+                cooking = _remember("cook", st.multiselect(
+                    "Cooking with (leave empty for none)",
+                    ["Airfryer", "Grill", "Microwave", "Oven", "Stove"], key="cook"))
 
             with t_life:
-                diet = st.selectbox("Diet", nominal_opts["Diet"], format_func=label, key="diet")
-                sex = st.selectbox("Sex", nominal_opts["Sex"], format_func=label, key="sex")
+                _restore("diet")
+                diet = _remember("diet", st.selectbox("Diet", nominal_opts["Diet"], format_func=label, key="diet"))
+                _restore("sex")
+                sex = _remember("sex", st.selectbox("Sex", nominal_opts["Sex"], format_func=label, key="sex"))
                 body_type = ordinal("Body Type", "Body type", "body")
                 social = ordinal("Social Activity", "Social activity", "social")
                 shower = ordinal("How Often Shower", "Showering", "shower")
@@ -149,8 +249,10 @@ if page == "Prediction":
             with t_waste:
                 waste_size = ordinal("Waste Bag Size", "Waste bag size", "wsize")
                 waste_count = slider("Waste Bag Weekly Count", "Waste bags per week", "wcount")
-                recycling = st.multiselect("Recycling (leave empty for none)",
-                                           ["Glass", "Metal", "Paper", "Plastic"], key="recycle")
+                _restore("recycle")
+                recycling = _remember("recycle", st.multiselect(
+                    "Recycling (leave empty for none)",
+                    ["Glass", "Metal", "Paper", "Plastic"], key="recycle"))
 
     # ---- run the model on the current inputs ----
     raw_input = {
@@ -224,8 +326,8 @@ if page == "Prediction":
             f"<span class='cx-delta {sign_cls}'>{delta_txt}</span>"
             f"{ui.dot_strip(pct)}"
             f"<div class='cx-strip-cap'><span>Lower</span><span>Higher than {pct:.0f}% of the reference sample</span></div></div>"
-            "<div class='cx-pinkwrap'><div class='cx-pink'>"
-            f"{ui.pink_art()}<div class='lab'>Emission level</div>"
+            f"<div class='cx-pinkwrap'><div class='cx-pink lvl-{level.lower()}'>"
+            f"{ui.pink_art()}<div class='lab'>Accumulative Emission Level</div>"
             f"<span class='lvl'>{level}</span>"
             "<div class='glass'>"
             f"<div class='pct'>{pct:.0f}<span style='font-size:26px'>%</span></div>"
@@ -251,7 +353,7 @@ if page == "Prediction":
     tiles = []
     for i, (d, title, sub) in enumerate(levers):
         tiles.append(
-            "<div class='cx-tile'>" + ui.tile_art(i) +
+            f"<div class='cx-tile {ui.tile_color_class(i)}'>" + ui.tile_art(i) +
             f"<div class='t'>{title}</div><div class='s'>{sub}</div>"
             f"<div class='glass'><span class='sv'>−{abs(d):,.0f}</span><span class='un'>kg CO₂e per month</span></div></div>")
     while len(tiles) < 3:
@@ -335,7 +437,7 @@ elif page == "Sustainability insights":
     imp = grouped_global(global_shap_values, shap_sample.columns)
     actionable = imp[[g for g in imp.index if g not in NON_ACTIONABLE]].sort_values(ascending=False).head(5)
     tiles = "".join(
-        f"<div class='cx-tile'>{ui.tile_art(i)}<div class='t'>{feat}</div><div class='s'>Rank {i + 1}</div>"
+        f"<div class='cx-tile {ui.tile_color_class(i)}'>{ui.tile_art(i)}<div class='t'>{feat}</div><div class='s'>Rank {i + 1}</div>"
         f"<div class='glass'><span class='sv'>{v:,.0f}</span><span class='un'>kg average impact</span></div></div>"
         for i, (feat, v) in enumerate(actionable.items()))
     st.markdown(f"<div class='cx-rank'>{tiles}</div>", unsafe_allow_html=True)
@@ -344,6 +446,78 @@ elif page == "Sustainability insights":
                 "are left out of this list because they are not behaviours a person can change, even though the model uses "
                 "them. The data appears synthetic, so use the ranking to show how the method works, not as measured advice "
                 "for real households.</div>", unsafe_allow_html=True)
+
+
+# ═════════════════════════ MALAYSIA CONTEXT ═════════════════════════
+elif page == "Malaysia context":
+    st.markdown(ui.hero("Malaysia in<br>context",
+                        "How your estimate compares with Malaysia's official national greenhouse gas "
+                        "inventory, reported by NRES and the Department of Statistics Malaysia to the "
+                        "UNFCCC."), unsafe_allow_html=True)
+
+    gh = load_malaysia_ghg()
+
+    if gh["ok"]:
+        chart = ui.area_chart(gh["series_years"], gh["series_values"],
+                              value_fmt=lambda v: f"{v / 1000:,.0f}K", x_tick_every=4)
+        st.markdown("<div class='cx-dark'><div class='cx-label'>Malaysia's total greenhouse gas emissions, "
+                    f"{gh['series_years'][0]}–{gh['series_years'][-1]} (Gg CO₂e, excluding LULUCF)"
+                    f"</div><div style='margin-top:14px'>{chart}</div></div>", unsafe_allow_html=True)
+
+        nat_month = gh["per_capita_kg_month"]
+        your_pred = prediction if "prediction" in dir() else avg_pred
+        html = (
+            "<div class='cx-grid'>"
+            "<div class='cx-card cx-main'><div class='cx-label'>"
+            f"Malaysia, national average ({gh['year']})</div>"
+            f"<div class='cx-big'>{ui.fmt(nat_month)}<small>kg CO₂e per month, per person</small></div>"
+            f"<div class='cx-note'>{ui.fmt(gh['per_capita_kg_year'])} kg CO₂e per year &middot; "
+            f"total national inventory {gh['total_gg_co2e']:,.0f} Gg CO₂e &middot; "
+            f"population {gh['population'] / 1_000_000:.1f} million</div></div>"
+            "<div class='cx-card'><div class='cx-label'>Your prediction vs. national average</div>"
+            f"<div class='cx-big' style='font-size:46px'>{your_pred / nat_month * 100:.0f}<small>%</small></div>"
+            "<div class='cx-note'>Not a strict like-for-like figure, see the note below.</div></div>"
+            "</div>"
+        )
+        st.markdown(html, unsafe_allow_html=True)
+
+        sector_items = sorted(gh["sectors"].items(), key=lambda kv: kv[1], reverse=True)
+        if sector_items:
+            top = max(v for _, v in sector_items)
+            rows = "".join(
+                f"<div class='cx-dbar'><div class='nm'>{SECTOR_LABEL.get(k, k)}</div>"
+                f"<div class='tr'><div class='f' style='width:{max(v, 0) / top * 100:.1f}%'></div></div>"
+                f"<div class='v'>{v:,.0f} Gg</div></div>" for k, v in sector_items)
+            st.markdown(f"<div class='cx-dark'><div class='cx-label'>National emissions by sector, "
+                        f"{gh['year']} (Gg CO₂e, excl. LULUCF unless shown)</div>"
+                        f"<div style='margin-top:12px'>{rows}</div></div>", unsafe_allow_html=True)
+
+        st.markdown(
+            "<div class='cx-warn'><b>Why this is context, not a direct comparison:</b> the national figure "
+            "above is Malaysia's entire greenhouse gas inventory (energy, industry, agriculture and waste, "
+            "reported in CO₂-equivalent) divided by population. It includes power plants, factories and "
+            "national infrastructure, not only household lifestyle choices. Your prediction above, by "
+            "contrast, comes from a single-person lifestyle model trained on a dataset that appears "
+            "synthetic. Treat the percentage above as scale, not accuracy: it shows roughly how large your "
+            "estimate is next to the whole country's per-person footprint, not whether your personal "
+            "emissions are high or low relative to other Malaysians.</div>", unsafe_allow_html=True)
+        st.caption("Source: data.gov.my — Greenhouse Gas Emissions, Malaysia (NRES/DOSM, CC BY 4.0) and "
+                   "Population, Malaysia (DOSM). Fetched live; refreshes once a day.")
+    else:
+        st.markdown(
+            "<div class='cx-warn'>Could not reach Malaysia's official open data API just now "
+            f"({gh.get('error', 'unknown error')}). Showing the most recent independently verified figure "
+            f"instead.</div>", unsafe_allow_html=True)
+        fb = FALLBACK_REF
+        html = (
+            "<div class='cx-card cx-main'><div class='cx-label'>"
+            f"Malaysia, national average ({fb['year']}, {fb['metric']})</div>"
+            f"<div class='cx-big'>{ui.fmt(fb['per_capita_kg_year'] / 12)}<small>kg per month, per person</small></div>"
+            f"<div class='cx-note'>{ui.fmt(fb['per_capita_kg_year'])} kg per year &middot; Source: {fb['source']}. "
+            "This figure is CO₂ only, not CO₂e, so it is not directly comparable to your prediction "
+            "above.</div></div>"
+        )
+        st.markdown(html, unsafe_allow_html=True)
 
 
 # ─────────────────────────── feedback band (all pages) ───────────────────────────

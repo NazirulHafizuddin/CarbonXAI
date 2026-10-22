@@ -33,7 +33,7 @@ import ui
 # ═════════════════════════════ CONFIGURE HERE ═════════════════════════════
 # TODO (feedback form): paste the link of your User Acceptance Test form between the quotes.
 # While it is empty, the feedback buttons show as a clearly marked placeholder.
-FEEDBACK_URL = "https://forms.cloud.microsoft/r/0DiMxG1xhK" #Link for UAT Survey Form
+FEEDBACK_URL = "https://forms.cloud.microsoft/r/0DiMxG1xhK"
 
 # TODO (images): put your files in the assets/ folder and write the file name here, for example
 #   "hero": "assets/hero.jpg"
@@ -206,9 +206,9 @@ LANDING_CSS = """
 /* ---------- type ---------- */
 .lp-eyebrow { font-size:13px; letter-spacing:.16em; text-transform:uppercase; font-weight:700; color:#6F9A12; }
 .dark .lp-eyebrow, .lp-eyebrow.on-dark { color:#C5E04F; }
-.lp-h1 { font-size: clamp(40px, 5.6vw, 80px); font-weight:700; line-height:1.0; letter-spacing:-.045em; text-wrap:balance; margin:14px 0 18px 0; color:#fff; }
+.lp-h1 { font-size: clamp(38px, 5vw, 68px); font-weight:700 !important; line-height:1.0; letter-spacing:-.045em; text-wrap:balance; margin:14px 0 18px 0; color:#fff; }
 .lp-h1 b { font-weight:600; color:#C5E04F; }
-.lp-h2 { font-size: clamp(32px, 4.2vw, 58px); font-weight:600; line-height:1.06; letter-spacing:-.035em; text-wrap:balance; margin:10px 0 10px 0; color:#0F1110; max-width: 20ch; }
+.lp-h2 { font-size: clamp(32px, 4.2vw, 58px); font-weight:700 !important; line-height:1.06; letter-spacing:-.035em; text-wrap:balance; margin:10px 0 10px 0; color:#0F1110; max-width: 20ch; }
 .lp-h2.wide { max-width: 24ch; }
 .lp-h2.on-dark { color:#fff; }
 .lp-lead { font-size: clamp(16px, 1.45vw, 20px); line-height:1.55; max-width:56ch; color:#5A5F63; margin:0; text-wrap:pretty; font-weight:400; }
@@ -271,14 +271,18 @@ LANDING_CSS = """
 .lp-card.dark { background:linear-gradient(180deg,#171A17,#0C0E0C); color:#fff; }
 .lp-card.lime { background:linear-gradient(160deg,#DCEF86,#B4D13C); }
 .lp-card.pink { background:linear-gradient(165deg,#FFB6CD,#FF5088); color:#fff; }
+.lp-card.green { background:linear-gradient(165deg,#8FE3A1,#1E8A47); color:#fff; }
+.lp-card.blue { background:linear-gradient(165deg,#8FD3F4,#1C6FA8); color:#fff; }
+.lp-card.teal { background:linear-gradient(165deg,#7FE8D0,#15876E); color:#fff; }
+.lp-card.violet { background:linear-gradient(165deg,#C7C3FF,#5B4BC4); color:#fff; }
 .lp-card.wide { flex-basis:min(86vw, 400px); }
 .lp-card .ic { width:54px; height:54px; border-radius:17px; display:grid; place-items:center; background:rgba(15,17,16,.06); color:#0F1110; }
-.lp-card.dark .ic, .lp-card.pink .ic { background:rgba(255,255,255,.16); color:#fff; }
+.lp-card.dark .ic, .lp-card.pink .ic, .lp-card.green .ic, .lp-card.blue .ic, .lp-card.teal .ic, .lp-card.violet .ic { background:rgba(255,255,255,.16); color:#fff; }
 .lp-card.lime .ic { background:rgba(15,17,16,.10); }
 .lp-card .tag { margin-top:auto; font-size:12.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; opacity:.55; }
-.lp-card h3 { font-size:24px; font-weight:600; letter-spacing:-.03em; text-wrap:balance; margin:22px 0 8px 0; color:inherit; line-height:1.12; }
+.lp-card h3 { font-size:24px; font-weight:600 !important; letter-spacing:-.03em; text-wrap:balance; margin:22px 0 8px 0; color:inherit; line-height:1.12; }
 .lp-card p { font-size:15.5px; line-height:1.55; margin:0 0 18px 0; color:inherit; opacity:.82; }
-.lp-card.dark h3, .lp-card.pink h3 { color:#fff; }
+.lp-card.dark h3, .lp-card.pink h3, .lp-card.green h3, .lp-card.blue h3, .lp-card.teal h3, .lp-card.violet h3 { color:#fff; }
 
 
 /* ---------- rail arrows (Apple-style round buttons) ---------- */
@@ -297,7 +301,7 @@ LANDING_CSS = """
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .35s ease, background .35s ease; }
 .lp-glass:hover { transform:translateY(-5px); background:rgba(255,255,255,.12); }
 .lp-glass .num { font-size:clamp(38px, 4.2vw, 58px); font-weight:600; letter-spacing:-.045em; line-height:1; color:#C5E04F; }
-.lp-glass h3 { font-size:21px; font-weight:600; margin:14px 0 8px 0; color:#fff; letter-spacing:-.01em; }
+.lp-glass h3 { font-size:21px; font-weight:600 !important; margin:14px 0 8px 0; color:#fff; letter-spacing:-.01em; }
 .lp-glass p { font-size:15px; line-height:1.55; margin:0; color:rgba(255,255,255,.76); }
 .lp-glass .src { display:inline-block; margin-top:14px; font-size:12px; color:rgba(255,255,255,.55); }
 .lp-chip { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; border-radius:999px; font-size:13.5px; font-weight:600; width:fit-content;
@@ -311,11 +315,12 @@ LANDING_CSS = """
 .lp-mod .ic { width:54px; height:54px; border-radius:17px; display:grid; place-items:center; background:#0F1110; color:#C5E04F; }
 .lp-mod.pink .ic { background:linear-gradient(165deg,#FF9DBD,#FF5088); color:#fff; }
 .lp-mod.lime .ic { background:#C5E04F; color:#0F1110; }
-.lp-mod h3 { font-size:21px; font-weight:600; letter-spacing:-.02em; margin:20px 0 8px 0; color:#0F1110; }
+.lp-mod h3 { font-size:21px; font-weight:600 !important; letter-spacing:-.02em; line-height:1.25; min-height:52.5px;
+  margin:20px 0 8px 0; color:#0F1110; }
 .lp-mod p { font-size:15px; line-height:1.55; margin:0; color:#5A5F63; }
-.lp-flow { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:22px; }
-.lp-flow .st { display:flex; align-items:center; gap:12px; padding:12px 20px 12px 12px; border-radius:999px; background:rgba(255,255,255,.75);
-  border:1px solid rgba(15,17,16,.08); font-weight:600; font-size:15px; backdrop-filter: blur(10px); }
+.lp-flow { display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:22px; }
+.lp-flow .st { display:flex; align-items:center; gap:10px; padding:11px 16px 11px 11px; border-radius:999px; background:rgba(255,255,255,.75);
+  border:1px solid rgba(15,17,16,.08); font-weight:600; font-size:14.5px; backdrop-filter: blur(10px); white-space:nowrap; }
 .lp-flow .st b { width:30px; height:30px; border-radius:50%; background:#0F1110; color:#C5E04F; display:grid; place-items:center; font-size:14px; }
 .lp-flow .ar { color:#9AA09A; font-size:20px; }
 
@@ -325,14 +330,14 @@ LANDING_CSS = """
   backdrop-filter: blur(14px); transition: transform .35s ease, background .35s ease; box-shadow:0 20px 40px -28px rgba(60,80,10,.5); }
 .lp-act:hover { transform:translateY(-6px); background:#fff; }
 .lp-act .ic { width:48px; height:48px; border-radius:15px; display:grid; place-items:center; background:#0F1110; color:#C5E04F; }
-.lp-act h3 { font-size:19px; font-weight:600; letter-spacing:-.01em; margin:18px 0 8px 0; color:#0F1110; line-height:1.15; }
+.lp-act h3 { font-size:19px; font-weight:600 !important; letter-spacing:-.01em; margin:18px 0 8px 0; color:#0F1110; line-height:1.15; }
 .lp-act p { font-size:14px; line-height:1.5; margin:0; color:#4D5348; }
 
 /* ---------- feedback ---------- */
 .lp-form { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); border-radius:30px; padding:28px; max-width:620px; margin-top:22px;
   backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
 .lp-form .lab { font-size:13px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:#C5E04F; }
-.lp-form h3 { font-size:28px; font-weight:600; letter-spacing:-.02em; margin:10px 0 8px 0; color:#fff; }
+.lp-form h3 { font-size:28px; font-weight:600 !important; letter-spacing:-.02em; margin:10px 0 8px 0; color:#fff; }
 .lp-form .ph { margin-top:14px; padding:14px 16px; border-radius:16px; border:1.5px dashed rgba(255,255,255,.4); color:rgba(255,255,255,.82); font-size:15px; }
 .lp-form .ph code { background:rgba(197,224,79,.16); color:#DDF08A; padding:2px 8px; border-radius:8px; font-size:13px; }
 .lp-foot { margin-top:34px; font-size:12.5px; color:rgba(255,255,255,.5); max-width:70ch; line-height:1.5; }
@@ -416,7 +421,7 @@ def _nav():
         with c2:
             st.markdown(_h("""<div class='lp-links'>
                 <a href='#lp-about'>The basics</a><a href='#lp-why'>Why it matters</a><a href='#lp-help'>How it works</a>
-                <a href='#lp-action'>Take action</a><a href='#lp-feedback'>Feedback</a></div>"""), unsafe_allow_html=True)
+                <a href='#lp-action'>Findings</a><a href='#lp-feedback'>Feedback</a></div>"""), unsafe_allow_html=True)
         with c3:
             # SKIP INTRO: goes straight to the dashboard
             if st.button("Skip intro", key="lpb_skip"):
@@ -427,9 +432,9 @@ def _hero():
     with st.container(key="lpsec_hero"):
         st.markdown(_h("""<span id='lp-top' class='lp-anchor'></span>
             <div class='lp-eyebrow on-dark'>Explainable machine learning for sustainability</div>
-            <h1 class='lp-h1'><b>Understand</b> carbon emissions.<br><b>Predict</b> your footprint.<br><b>Explain</b> the factors.</h1>
-            <p class='lp-lead on-dark'>CarbonXAI estimates your monthly carbon footprint from everyday habits, then uses SHAP to show
-            which factors push it up or down.</p>"""), unsafe_allow_html=True)
+            <h1 class='lp-h1'>See what <b>drives</b><br>a carbon footprint,<br>not just the number.</h1>
+            <p class='lp-lead on-dark'>CarbonXAI trains and compares three machine learning models on individual carbon footprint data,
+            then uses SHAP to show which lifestyle factors drive each prediction. Built for students and sustainability researchers.</p>"""), unsafe_allow_html=True)
         b1, b2, _ = st.columns([1.15, 1.25, 4], gap="small", vertical_alignment="center")
         with b1:
             # START EXPLORING: plain anchor, scrolls to the next screen
@@ -488,12 +493,12 @@ def _about():
                   "CO₂, methane and nitrous oxide trap heat in the atmosphere. The more of them, the warmer the planet.", "The basics"),
             _card("pink wide", "foot", "Carbon footprint",
                   "All the greenhouse gases linked to what one person does, counted in kg of CO₂e. CO₂e puts every gas on the same scale.", "The basics"),
-            _card("", "car", "Transport", "Petrol and diesel vehicles release CO₂ from the tailpipe. Public transport, walking and cycling usually release less.", "Everyday source"),
-            _card("", "plane", "Air travel", "Flights burn large amounts of jet fuel, so even a few trips can add a lot to a footprint.", "Everyday source"),
-            _card("", "bolt", "Home energy", "Electricity and heating release CO₂ when they come from fossil fuels.", "Everyday source"),
-            _card("", "food", "Food", "Growing, moving and cooking food all release greenhouse gases, and some diets release more than others.", "Everyday source"),
-            _card("", "bag", "Shopping", "Making and shipping clothes and goods uses energy, so what and how often we buy matters.", "Everyday source"),
-            _card("", "bin", "Waste", "Landfills release methane, and recycling can cut the energy needed to make new materials.", "Everyday source"),
+            _card("green", "car", "Transport", "Petrol and diesel vehicles release CO₂ from the tailpipe. Public transport, walking and cycling usually release less.", "Everyday source"),
+            _card("blue", "plane", "Air travel", "Flights burn large amounts of jet fuel, so even a few trips can add a lot to a footprint.", "Everyday source"),
+            _card("teal", "bolt", "Home energy", "Electricity and heating release CO₂ when they come from fossil fuels.", "Everyday source"),
+            _card("violet", "food", "Food", "Growing, moving and cooking food all release greenhouse gases, and some diets release more than others.", "Everyday source"),
+            _card("pink", "bag", "Shopping", "Making and shipping clothes and goods uses energy, so what and how often we buy matters.", "Everyday source"),
+            _card("green", "bin", "Waste", "Landfills release methane, and recycling can cut the energy needed to make new materials.", "Everyday source"),
         ]
         st.markdown(_h(f"""<span id='lp-about' class='lp-anchor'></span>
             <div class='lp-rise'><div class='lp-eyebrow'>01 &middot; The basics</div>
@@ -554,7 +559,8 @@ def _help():
         st.markdown(_h("""<div class='lp-flow lp-rise'>
             <span class='st'><b>1</b>You enter your habits</span><span class='ar'>&rarr;</span>
             <span class='st'><b>2</b>The model estimates your footprint</span><span class='ar'>&rarr;</span>
-            <span class='st'><b>3</b>SHAP explains the reasons</span></div>"""), unsafe_allow_html=True)
+            <span class='st'><b>3</b>SHAP explains the reasons</span><span class='ar'>&rarr;</span>
+            <span class='st'><b>4</b>You see what to change</span></div>"""), unsafe_allow_html=True)
 
 
 def _act(ic, title, text):
@@ -563,19 +569,20 @@ def _act(ic, title, text):
 
 def _action():
     with st.container(key="lpsec_action"):
+        # Findings come from models/results.json and models/shap_sample.csv (mean absolute SHAP, 1,000 test records).
         acts = [
-            _act("route", "Travel smarter", "Combine trips, share rides, or swap some journeys for public transport, walking or cycling."),
-            _act("plane", "Fly less", "Air travel is one of the strongest drivers in our model, so fewer trips change the estimate a lot."),
-            _act("bag", "Buy with intent", "Fewer new clothes and goods means less energy spent making and shipping them."),
-            _act("bin", "Waste less, recycle more", "Smaller waste bags and sorting glass, metal, paper and plastic reduce what reaches landfill."),
-            _act("plug", "Choose cleaner options", "In our model, electric vehicles and electric heating lower the estimate."),
+            _act("route", "Distance leads", "Monthly vehicle distance has the largest mean absolute SHAP value, about 461 kg CO₂e."),
+            _act("plane", "Flying follows", "How often a person travels by air comes second, about 446 kg CO₂e."),
+            _act("spark", "Demographic signals", "Body type and sex also rank high. This most likely reflects how the dataset was produced, not a real-world cause."),
+            _act("bag", "Consumption adds up", "New clothes per month and waste bag count each add roughly 140 to 175 kg CO₂e."),
+            _act("bars", "Model choice matters", "XGBoost reaches a test MAE of about 77 kg, against about 204 kg for Random Forest."),
         ]
         st.markdown(_h(f"""<span id='lp-action' class='lp-anchor'></span>
-            <div class='lp-rise'><div class='lp-eyebrow'>04 &middot; From awareness to action</div>
-            <h2 class='lp-h2 wide'>Know the drivers. Change the habits.</h2>
-            <p class='lp-lead' style='color:#3F4A22'>Use CarbonXAI to learn what raises your footprint, spot where to improve, and reflect on your routine.</p></div>
+            <div class='lp-rise'><div class='lp-eyebrow'>04 &middot; From insight to interpretation</div>
+            <h2 class='lp-h2 wide'>Read the drivers. Question the model.</h2>
+            <p class='lp-lead' style='color:#3F4A22'>What the best model learned from this dataset, shown as mean absolute SHAP values across 1,000 test records.</p></div>
             <div class='lp-acts'>{''.join(acts)}</div>
-            <div class='lp-fine' style='color:#4D5A2A'>Estimates come from a model trained on a public dataset, so use them to explore habits, not as a certified carbon audit.</div>"""),
+            <div class='lp-fine' style='color:#4D5A2A'>SHAP describes what the model learned from the data, not cause and effect, and the dataset appears to be synthetic. Use the results to explore and learn, not as a certified carbon audit.</div>"""),
                     unsafe_allow_html=True)
         a1, a2, _ = st.columns([1.2, 1.5, 3.6], gap="small", vertical_alignment="center")
         with a1:
@@ -612,9 +619,9 @@ def _feedback():
 def _feedback_button(key):
     """Real link when FEEDBACK_URL is set, otherwise a disabled placeholder."""
     if FEEDBACK_URL:
-        st.link_button("Open feedback form", FEEDBACK_URL, key=key)
+        st.link_button("Open Feedback Form", FEEDBACK_URL, key=key)
     else:
-        st.button("Open feedback form", key=key, disabled=True)
+        st.button("Open Feedback Form", key=key, disabled=True)
 
 
 # ═════════════════════════════ PUBLIC API ═════════════════════════════
@@ -637,18 +644,20 @@ def feedback_footer():
     st.markdown("<style>.lp-dashfoot{margin-top:30px;padding:20px 26px;border-radius:28px;background:rgba(255,255,255,.7);"
                 "border:1px solid rgba(15,17,16,.08);backdrop-filter:blur(12px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}"
                 ".lp-dashfoot b{font-size:17px;font-weight:600}.lp-dashfoot span{color:#6B6F73;font-size:14px}"
-                ".lp-dashfoot-btns{margin-top:10px}"
                 "[class*='st-key-lpb_dashfb'] button,[class*='st-key-lpb_dashfb'] a{border-radius:999px!important;padding:10px 22px!important;font-weight:700!important}"
                 "[class*='st-key-lpb_dashfb'] button:disabled{opacity:.6}[class*='st-key-lpb_dashfb_lime'] button,[class*='st-key-lpb_dashfb_lime'] a{background:#C5E04F!important;color:#0F1110!important;border:1px solid #C5E04F!important}"
                 "[class*='st-key-lpb_dashfb_line'] a{background:rgba(255,255,255,.8)!important;color:#0F1110!important;border:1px solid rgba(15,17,16,.18)!important}"
+                "[class*='st-key-dashback_wrap'] a{justify-content:flex-end!important;display:flex!important}"
                 "</style>"
                 "<div class='lp-dashfoot'><b>Tried CarbonXAI?</b><span>Tell us what worked and what did not. It is part of the user acceptance test.</span></div>",
                 unsafe_allow_html=True)
-    c1, c2, _ = st.columns([1.9, 1.1, 4], vertical_alignment="center")
+    st.markdown("<div style='height:18px'></div>", unsafe_allow_html=True)
+    c1, _, c2 = st.columns([1.5, 4.5, 1.5], vertical_alignment="center")
     with c1:
         if FEEDBACK_URL:
-            st.link_button("Open feedback form", FEEDBACK_URL, key="lpb_dashfb_lime")
+            st.link_button("Open Feedback Form", FEEDBACK_URL, key="lpb_dashfb_lime")
         else:
             st.button("Feedback form (coming soon)", key="lpb_dashfb_lime", disabled=True)
     with c2:
-        st.page_link(INTRO_PAGE, label="Back to intro", icon=":material/arrow_back:")
+        with st.container(key="dashback_wrap"):
+            st.page_link(INTRO_PAGE, label="Back to intro", icon=":material/arrow_back:")
