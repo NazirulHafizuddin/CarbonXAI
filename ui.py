@@ -55,11 +55,11 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 .cx-chip i { width:8px; height:8px; border-radius:50%; background:#8DB600; display:inline-block; }
 .cx-right { display:flex; justify-content:flex-end; }
 .st-key-nav, .st-key-shapview { display:flex; justify-content:center; }
-.st-key-nav [data-testid="stButtonGroup"] > div, .st-key-shapview [data-testid="stButtonGroup"] > div { gap: 8px; }
+.st-key-nav [data-testid="stButtonGroup"] > div, .st-key-shapview [data-testid="stButtonGroup"] > div { gap: 6px; flex-wrap: wrap; row-gap:8px; }
 .st-key-nav button[role="radio"], .st-key-shapview button[role="radio"] {
-  border-radius: 999px !important; padding: 8px 22px !important; border: 1px solid rgba(15,17,16,.12) !important;
+  border-radius: 999px !important; padding: 7px 13px !important; border: 1px solid rgba(15,17,16,.12) !important;
   background: rgba(255,255,255,.65) !important; color: #0F1110 !important; font-weight: 600 !important;
-  box-shadow: none !important; backdrop-filter: blur(10px);
+  font-size: 13px !important; white-space: nowrap; box-shadow: none !important; backdrop-filter: blur(10px);
 }
 .st-key-nav button[role="radio"] *, .st-key-shapview button[role="radio"] * { color: inherit !important; }
 .st-key-shapview { justify-content:flex-start; margin-bottom:6px; }

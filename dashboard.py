@@ -21,6 +21,7 @@ import ui
 from preprocessing import transform_single_input, group_name, NON_ACTIONABLE
 
 import landing
+import know_your_carbon
 
 st.markdown(ui.CSS, unsafe_allow_html=True)
 
@@ -143,22 +144,37 @@ def grouped_global(sv, columns):
 
 
 # ─────────────────────────── top bar ───────────────────────────
-PAGES = ["Prediction", "Model comparison", "SHAP explanations", "Sustainability insights", "Malaysia context"]
-c_left, c_mid, c_right = st.columns([1.1, 2.6, 1.1], vertical_alignment="center")
+PAGES = ["Know Your Carbon", "Prediction", "Model comparison", "SHAP explanations",
+         "Sustainability insights", "Malaysia context"]
+c_left, c_mid, c_right = st.columns([0.68, 4.1, 0.68], vertical_alignment="center")
 with c_left:
     st.markdown(ui.brand(), unsafe_allow_html=True)
 with c_mid:
     if "_goto" in st.session_state:                    # set by the intro page, e.g. "Open SHAP explanations"
         st.session_state["nav"] = st.session_state.pop("_goto")
-    st.session_state.setdefault("nav", "Prediction")
+    st.session_state.setdefault("nav", "Know Your Carbon")
     page = st.segmented_control("Navigate", PAGES, key="nav",
                                 label_visibility="collapsed") or "Prediction"
 with c_right:
     st.markdown(ui.model_chip(best_name), unsafe_allow_html=True)
 
 
+# ═════════════════════════ KNOW YOUR CARBON ═════════════════════════
+if page == "Know Your Carbon":
+    def _go_to_prediction():
+        # Same indirection the landing page uses to pre-select a tab: "nav" is
+        # a widget key and can't be written to after the segmented_control
+        # above has already been instantiated this run, so a plain session
+        # key is set instead and consumed on the next run, before that widget
+        # is drawn again.
+        st.session_state["_goto"] = "Prediction"
+        st.rerun()
+
+    know_your_carbon.render(_go_to_prediction)
+
+
 # ═════════════════════════ PREDICTION ═════════════════════════
-if page == "Prediction":
+elif page == "Prediction":
     # The page router above only re-runs this whole block while "Prediction" is the
     # active tab; Streamlit drops a widget's session_state entry the moment it is not
     # instantiated on a run, which is what reset every field to its default as soon as
