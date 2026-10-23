@@ -69,11 +69,11 @@ KYC_CSS = """
 .kyc-eyebrow { font-size:13px; letter-spacing:.16em; text-transform:uppercase; font-weight:800; color:#6F9A12; }
 .kyc-eyebrow.on-dark { color:#C5E04F; }
 .kyc-h1 { font-size: clamp(32px, 4.4vw, 52px); font-weight:700; line-height:1.04; letter-spacing:-.04em; margin:12px 0 14px 0; color:#fff; }
-.kyc-h2 { font-size: clamp(25px, 2.8vw, 34px); font-weight:700; line-height:1.14; letter-spacing:-.03em; margin:8px 0 10px 0; color:#0F1110; max-width:28ch; }
+.kyc-h2 { font-size: clamp(25px, 2.8vw, 34px); font-weight:700; line-height:1.14; letter-spacing:-.03em; margin:8px 0 10px 0; color:var(--cx-ink); max-width:28ch; }
 .kyc-h2.on-dark { color:#fff; }
-.kyc-lead { font-size:15.5px; line-height:1.6; color:#5A5F63; max-width:64ch; margin:0; }
+.kyc-lead { font-size:15.5px; line-height:1.6; color:var(--cx-muted); max-width:64ch; margin:0; }
 .kyc-lead.on-dark { color:rgba(255,255,255,.80); }
-.kyc-hint { font-size:13px; color:#7A7E82; display:flex; align-items:center; gap:8px; margin:12px 0 10px 0; }
+.kyc-hint { font-size:13px; color:var(--cx-muted-2); display:flex; align-items:center; gap:8px; margin:12px 0 10px 0; }
 
 /* ---------- hero banner ----------
    Styled on the container key itself (like landing.py's st-key-lpsec_*),
@@ -92,12 +92,12 @@ KYC_CSS = """
 .kyc-rail::-webkit-scrollbar-thumb { background:rgba(15,17,16,.5); border-radius:6px; }
 
 .kyc-card { flex:0 0 min(78vw, 300px); min-height:280px; scroll-snap-align:start; border-radius:28px; padding:24px;
-  background:#fff; position:relative; overflow:hidden; display:flex; flex-direction:column; color:#0F1110;
-  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 22px 42px -26px rgba(20,22,20,.32);
+  background:var(--cx-card-bg); position:relative; overflow:hidden; display:flex; flex-direction:column; color:var(--cx-ink);
+  box-shadow: 0 1px 0 var(--cx-card-shadow-inset) inset, 0 22px 42px -26px rgba(20,22,20,.32);
   transition: transform .3s ease, box-shadow .3s ease; }
-.kyc-card:hover { transform:translateY(-6px); box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 32px 52px -26px rgba(20,22,20,.4); }
+.kyc-card:hover { transform:translateY(-6px); box-shadow: 0 1px 0 var(--cx-card-shadow-inset) inset, 0 32px 52px -26px rgba(20,22,20,.4); }
 .kyc-card.wide { flex-basis:min(84vw, 360px); }
-.kyc-card .ic { width:48px; height:48px; border-radius:15px; display:grid; place-items:center; background:rgba(15,17,16,.06); color:#0F1110; flex:none; }
+.kyc-card .ic { width:48px; height:48px; border-radius:15px; display:grid; place-items:center; background:var(--cx-icon-bg); color:var(--cx-ink); flex:none; }
 .kyc-card h3 { font-size:20.5px; font-weight:600; letter-spacing:-.02em; margin:18px 0 8px 0; line-height:1.2; color:inherit; }
 .kyc-card p { font-size:14.5px; line-height:1.52; margin:0; color:inherit; opacity:.86; }
 .kyc-card .tag { margin-top:auto; padding-top:16px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; font-weight:700; opacity:.55; }
@@ -124,8 +124,10 @@ KYC_CSS = """
 /* ---------- rail arrows ---------- */
 .kyc-arrows { display:flex; justify-content:flex-end; gap:10px; margin-top:-4px; }
 .kyc-arrow { width:42px; height:42px; border-radius:50%; border:0; display:grid; place-items:center; cursor:pointer; padding:0;
-  background:rgba(15,17,16,.08); color:#0F1110; transition: background .2s, transform .2s, opacity .2s; }
+  background:var(--cx-pill-bg); color:var(--cx-pill-text); transition: background .2s, transform .2s, opacity .2s; }
 .kyc-arrow:hover:not(:disabled) { background:#0F1110; color:#fff; transform:scale(1.06); }
+:root[data-theme="dark"] .kyc-arrow:hover:not(:disabled) { background:#C5E04F; color:#0F1110; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .kyc-arrow:hover:not(:disabled) { background:#C5E04F; color:#0F1110; } }
 .kyc-arrow:focus-visible { outline:2px solid #6F9A12; outline-offset:2px; }
 .kyc-arrow:disabled { opacity:.35; cursor:default; }
 .kyc-arrow svg { width:18px; height:18px; }
@@ -153,12 +155,12 @@ KYC_CSS = """
 
 /* ---------- drop-to-bucket analogy ---------- */
 [class*="st-key-kycsec_analogy"] { margin-top: 26px; }
-.kyc-quote { font-size: clamp(23px, 2.8vw, 32px); font-weight:600; line-height:1.4; letter-spacing:-.02em; color:#0F1110; margin:6px 0 16px 0; max-width:40ch; }
+.kyc-quote { font-size: clamp(23px, 2.8vw, 32px); font-weight:600; line-height:1.4; letter-spacing:-.02em; color:var(--cx-ink); margin:6px 0 16px 0; max-width:40ch; }
 .kyc-quote b { color:#5E8C14; }
 .kyc-flow { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:26px; }
 .kyc-drops { display:flex; flex-wrap:wrap; gap:10px; flex:1 1 420px; }
-.kyc-drop { display:flex; align-items:center; gap:9px; padding:9px 14px 9px 9px; border-radius:999px; background:rgba(255,255,255,.75);
-  border:1px solid rgba(15,17,16,.08); font-weight:600; font-size:14px; color:#0F1110; backdrop-filter: blur(10px); white-space:nowrap; }
+.kyc-drop { display:flex; align-items:center; gap:9px; padding:9px 14px 9px 9px; border-radius:999px; background:var(--cx-chip-bg);
+  border:1px solid var(--cx-chip-border); font-weight:600; font-size:14px; color:var(--cx-ink); backdrop-filter: blur(10px); white-space:nowrap; }
 .kyc-drop .ic { width:26px; height:26px; border-radius:50%; background:#0F1110; color:#C5E04F; display:grid; place-items:center; flex:none; }
 .kyc-flow-arrow { color:#9AA09A; font-size:22px; flex:0 0 auto; }
 .kyc-bucket { display:flex; align-items:center; gap:12px; padding:15px 24px; border-radius:999px; background:#0F1110; color:#fff;
@@ -166,10 +168,10 @@ KYC_CSS = """
 .kyc-bucket .ic { width:36px; height:36px; border-radius:50%; background:#C5E04F; color:#0F1110; display:grid; place-items:center; flex:none; }
 
 /* ---------- explainability panel ---------- */
-.kyc-panel { background: rgba(255,255,255,.72); border:1px solid rgba(15,17,16,.08); border-radius:28px; padding:26px 30px;
+.kyc-panel { background: var(--cx-warn-bg); border:1px solid var(--cx-chip-border); border-radius:28px; padding:26px 30px;
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); margin-top:16px; }
-.kyc-panel h3 { font-size:18.5px; font-weight:600; margin:0 0 10px 0; color:#0F1110; }
-.kyc-panel p { font-size:14.5px; line-height:1.6; color:#3A3F3B; margin:0; max-width:78ch; }
+.kyc-panel h3 { font-size:18.5px; font-weight:600; margin:0 0 10px 0; color:var(--cx-ink); }
+.kyc-panel p { font-size:14.5px; line-height:1.6; color:var(--cx-warn-text); margin:0; max-width:78ch; }
 
 /* ---------- final CTA ---------- */
 .kyc-cta { margin-top:32px; background: linear-gradient(180deg,#141714 0%,#090A09 100%); border-radius:40px; padding:48px 48px 44px 48px;

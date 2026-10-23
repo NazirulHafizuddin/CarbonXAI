@@ -22,6 +22,71 @@ CSS = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* ---------- theme tokens (light default, dark override) ----------
+   Only the neutral "shell" surfaces (page background, body text, plain
+   cards, nav pills, tracks, glass panels) are tokenised. The deliberately
+   colourful / always-dark elements (brand gradient tiles, the dark
+   .st-key-controls panel, .cx-band, .cx-pink, the lp-card/kyc-card colour
+   variants, hero banners) keep their fixed colours in both themes -- they
+   already read as an accent, not as "light mode". */
+:root {
+  --cx-page-bg: radial-gradient(900px 520px at 88% -8%, #ffffff 0%, rgba(255,255,255,0) 60%),
+                radial-gradient(700px 480px at -5% 40%, #F7F2F5 0%, rgba(247,242,245,0) 60%),
+                linear-gradient(180deg, #EFEFF2 0%, #E3E4E8 100%);
+  --cx-ink: #0F1110; --cx-muted: #6B6F73; --cx-muted-2: #8A8D91;
+  --cx-card-bg: #ffffff; --cx-card-shadow-inset: rgba(255,255,255,.9);
+  --cx-chip-bg: rgba(255,255,255,.7); --cx-chip-border: rgba(15,17,16,.08);
+  --cx-pill-bg: rgba(255,255,255,.65); --cx-pill-border: rgba(15,17,16,.12); --cx-pill-text: #0F1110;
+  --cx-track-bg: #E3E4E8; --cx-hbar-track: #ECEDEF; --cx-row-border: rgba(120,120,120,.18);
+  --cx-warn-bg: rgba(255,255,255,.7); --cx-warn-text: #3A3F3B;
+  --cx-nav-bg: rgba(255,255,255,.92); --cx-nav-border: rgba(15,17,16,.08);
+  --cx-icon-bg: rgba(15,17,16,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --cx-page-bg: radial-gradient(900px 520px at 88% -8%, rgba(197,224,79,.06) 0%, rgba(197,224,79,0) 60%),
+                  radial-gradient(700px 480px at -5% 40%, rgba(255,255,255,.03) 0%, rgba(255,255,255,0) 60%),
+                  linear-gradient(180deg, #0D0F0D 0%, #07080A 100%);
+    --cx-ink: #F1F3EF; --cx-muted: #9AA09A; --cx-muted-2: #7C827C;
+    --cx-card-bg: #171A17; --cx-card-shadow-inset: rgba(255,255,255,.05);
+    --cx-chip-bg: rgba(255,255,255,.08); --cx-chip-border: rgba(255,255,255,.14);
+    --cx-pill-bg: rgba(255,255,255,.08); --cx-pill-border: rgba(255,255,255,.16); --cx-pill-text: #F1F3EF;
+    --cx-track-bg: rgba(255,255,255,.1); --cx-hbar-track: rgba(255,255,255,.08); --cx-row-border: rgba(255,255,255,.14);
+    --cx-warn-bg: rgba(255,255,255,.06); --cx-warn-text: #D7DBD6;
+    --cx-nav-bg: rgba(14,16,14,.82); --cx-nav-border: rgba(255,255,255,.12);
+    --cx-icon-bg: rgba(255,255,255,.12);
+  }
+}
+:root[data-theme="dark"] {
+  --cx-page-bg: radial-gradient(900px 520px at 88% -8%, rgba(197,224,79,.06) 0%, rgba(197,224,79,0) 60%),
+                radial-gradient(700px 480px at -5% 40%, rgba(255,255,255,.03) 0%, rgba(255,255,255,0) 60%),
+                linear-gradient(180deg, #0D0F0D 0%, #07080A 100%);
+  --cx-ink: #F1F3EF; --cx-muted: #9AA09A; --cx-muted-2: #7C827C;
+  --cx-card-bg: #171A17; --cx-card-shadow-inset: rgba(255,255,255,.05);
+  --cx-chip-bg: rgba(255,255,255,.08); --cx-chip-border: rgba(255,255,255,.14);
+  --cx-pill-bg: rgba(255,255,255,.08); --cx-pill-border: rgba(255,255,255,.16); --cx-pill-text: #F1F3EF;
+  --cx-track-bg: rgba(255,255,255,.1); --cx-hbar-track: rgba(255,255,255,.08); --cx-row-border: rgba(255,255,255,.14);
+  --cx-warn-bg: rgba(255,255,255,.06); --cx-warn-text: #D7DBD6;
+  --cx-nav-bg: rgba(14,16,14,.82); --cx-nav-border: rgba(255,255,255,.12);
+  --cx-icon-bg: rgba(255,255,255,.12);
+}
+
+/* ---------- theme toggle button (fixed, top-left) ---------- */
+.cx-theme-toggle { position:fixed; top:14px; left:14px; z-index:1001; width:42px; height:42px; border-radius:50%; border:1px solid var(--cx-chip-border);
+  display:grid; place-items:center; cursor:pointer; padding:0; background:var(--cx-chip-bg); color:var(--cx-ink);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow:0 14px 28px -16px rgba(0,0,0,.4);
+  transition: background .2s, transform .2s; }
+.cx-theme-toggle:hover { transform:scale(1.07); }
+.cx-theme-toggle:focus-visible { outline:2px solid #6F9A12; outline-offset:2px; }
+.cx-theme-toggle .sun, .cx-theme-toggle .moon { display:none; }
+.cx-theme-toggle .sun { display:block; }
+:root[data-theme="dark"] .cx-theme-toggle .sun { display:none; }
+:root[data-theme="dark"] .cx-theme-toggle .moon { display:block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cx-theme-toggle .sun { display:none; }
+  :root:not([data-theme="light"]) .cx-theme-toggle .moon { display:block; }
+}
+
 /* ---------- page shell ---------- */
 .stApp, .stApp :is(h1,h2,h3,h4,h5,h6,p,div,a,li,td,th,small,label,button,input,textarea,select,article,code),
 .stApp span:not([data-testid="stIconMaterial"]) {
@@ -36,47 +101,50 @@ CSS = """
    Hiding it app-wide, once, here, keeps every page's headings in plain text flow. */
 [data-testid="stHeaderActionElements"] { display:none !important; }
 .stApp {
-  background:
-    radial-gradient(900px 520px at 88% -8%, #ffffff 0%, rgba(255,255,255,0) 60%),
-    radial-gradient(700px 480px at -5% 40%, #F7F2F5 0%, rgba(247,242,245,0) 60%),
-    linear-gradient(180deg, #EFEFF2 0%, #E3E4E8 100%);
-  color: #0F1110;
+  background: var(--cx-page-bg);
+  color: var(--cx-ink);
 }
 [data-testid="stHeader"], [data-testid="stToolbar"], [data-testid="stSidebar"],
 [data-testid="stSidebarCollapsedControl"], footer { display: none !important; }
 .block-container { max-width: 1480px; padding: 1.4rem 2.2rem 3rem 2.2rem; }
-h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
+h1, h2, h3, h4 { color: var(--cx-ink); letter-spacing: -0.02em; font-weight: 600; }
 
 /* ---------- top bar and pill navigation ---------- */
 .cx-brand { display:flex; align-items:center; gap:12px; font-weight:600; font-size:20px; letter-spacing:-.01em; height:44px; }
 .cx-brand .mark { width:38px; height:38px; border-radius:12px; background:#0F1110; display:grid; place-items:center; }
-.cx-chip { display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:999px; background:rgba(255,255,255,.7);
-  border:1px solid rgba(15,17,16,.08); font-size:14px; font-weight:600; backdrop-filter: blur(10px); }
+.cx-chip { display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:999px; background:var(--cx-chip-bg);
+  border:1px solid var(--cx-chip-border); font-size:14px; font-weight:600; backdrop-filter: blur(10px); }
 .cx-chip i { width:8px; height:8px; border-radius:50%; background:#8DB600; display:inline-block; }
 .cx-right { display:flex; justify-content:flex-end; }
 .st-key-nav, .st-key-shapview { display:flex; justify-content:center; }
 .st-key-nav [data-testid="stButtonGroup"] > div, .st-key-shapview [data-testid="stButtonGroup"] > div { gap: 6px; flex-wrap: wrap; row-gap:8px; }
 .st-key-nav button[role="radio"], .st-key-shapview button[role="radio"] {
-  border-radius: 999px !important; padding: 7px 13px !important; border: 1px solid rgba(15,17,16,.12) !important;
-  background: rgba(255,255,255,.65) !important; color: #0F1110 !important; font-weight: 600 !important;
+  border-radius: 999px !important; padding: 7px 13px !important; border: 1px solid var(--cx-pill-border) !important;
+  background: var(--cx-pill-bg) !important; color: var(--cx-pill-text) !important; font-weight: 600 !important;
   font-size: 13px !important; white-space: nowrap; box-shadow: none !important; backdrop-filter: blur(10px);
 }
 .st-key-nav button[role="radio"] *, .st-key-shapview button[role="radio"] * { color: inherit !important; }
 .st-key-shapview { justify-content:flex-start; margin-bottom:6px; }
 .st-key-nav button[role="radio"][aria-checked="true"], .st-key-shapview button[role="radio"][aria-checked="true"] { background:#0F1110 !important; color:#fff !important; border-color:#0F1110 !important; }
+:root[data-theme="dark"] .st-key-nav button[role="radio"][aria-checked="true"],
+:root[data-theme="dark"] .st-key-shapview button[role="radio"][aria-checked="true"] { background:#C5E04F !important; color:#0F1110 !important; border-color:#C5E04F !important; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .st-key-nav button[role="radio"][aria-checked="true"],
+  :root:not([data-theme="light"]) .st-key-shapview button[role="radio"][aria-checked="true"] { background:#C5E04F !important; color:#0F1110 !important; border-color:#C5E04F !important; }
+}
 
 /* ---------- hero text ---------- */
 .cx-hero h1 { font-size: 50px; font-weight: 700; line-height: 1.04; margin: 18px 0 6px 0; letter-spacing: -.04em; }
-.cx-hero p { color:#6B6F73; font-size:15px; margin:0 0 18px 0; max-width: 46ch; line-height:1.5; }
+.cx-hero p { color:var(--cx-muted); font-size:15px; margin:0 0 18px 0; max-width: 46ch; line-height:1.5; }
 
 /* ---------- white cards ---------- */
 .cx-grid { display:grid; grid-template-columns: 1.2fr 1fr 0.85fr; gap:16px; margin-top: 18px; }
-.cx-card { background:#fff; border-radius:28px; padding:22px 26px; position:relative; overflow:hidden;
-  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 22px 44px -26px rgba(20,22,20,.30); }
-.cx-label { font-size:14px; color:#6B6F73; font-weight:500; }
-.cx-big { font-size:56px; font-weight:600; letter-spacing:-.035em; line-height:1.02; margin-top:6px; color:#0F1110; }
-.cx-big small { font-size:20px; color:#6B6F73; font-weight:400; letter-spacing:0; margin-left:8px; }
-.cx-note { font-size:13px; color:#6B6F73; line-height:1.5; margin-top:10px; }
+.cx-card { background:var(--cx-card-bg); border-radius:28px; padding:22px 26px; position:relative; overflow:hidden;
+  box-shadow: 0 1px 0 var(--cx-card-shadow-inset) inset, 0 22px 44px -26px rgba(20,22,20,.30); }
+.cx-label { font-size:14px; color:var(--cx-muted); font-weight:500; }
+.cx-big { font-size:56px; font-weight:600; letter-spacing:-.035em; line-height:1.02; margin-top:6px; color:var(--cx-ink); }
+.cx-big small { font-size:20px; color:var(--cx-muted); font-weight:400; letter-spacing:0; margin-left:8px; }
+.cx-note { font-size:13px; color:var(--cx-muted); line-height:1.5; margin-top:10px; }
 .cx-main { grid-column: 1 / span 2; }
 .cx-pinkwrap { grid-column: 3; grid-row: 1 / span 2; }
 .cx-shapcard { grid-column: 1 / span 3; }
@@ -86,18 +154,18 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 
 /* dotted scale strip */
 .cx-strip { display:flex; gap:5px; align-items:center; margin-top:20px; }
-.cx-strip i { width:7px; height:7px; border-radius:50%; background:#D6D8DB; flex:none; }
-.cx-strip i.on { background:#0F1110; }
-.cx-strip i.mk { width:18px; height:18px; background:#fff; border:2px solid #0F1110; box-shadow:0 6px 14px -4px rgba(0,0,0,.4); }
-.cx-strip-cap { display:flex; justify-content:space-between; font-size:12px; color:#8A8D91; margin-top:8px; }
+.cx-strip i { width:7px; height:7px; border-radius:50%; background:var(--cx-row-border); flex:none; }
+.cx-strip i.on { background:var(--cx-ink); }
+.cx-strip i.mk { width:18px; height:18px; background:var(--cx-card-bg); border:2px solid var(--cx-ink); box-shadow:0 6px 14px -4px rgba(0,0,0,.4); }
+.cx-strip-cap { display:flex; justify-content:space-between; font-size:12px; color:var(--cx-muted-2); margin-top:8px; }
 
 /* SHAP rows */
 .cx-shaprow { display:grid; grid-template-columns: 230px 1fr 74px; align-items:center; gap:12px; padding:7px 0; }
-.cx-shaprow .nm { font-size:14px; letter-spacing:-.01em; font-weight:500; color:#0F1110; text-align:right; }
-.cx-shaprow .tr { position:relative; height:14px; background: linear-gradient(90deg, transparent 49.8%, #E3E4E8 49.8%, #E3E4E8 50.2%, transparent 50.2%); }
+.cx-shaprow .nm { font-size:14px; letter-spacing:-.01em; font-weight:500; color:var(--cx-ink); text-align:right; }
+.cx-shaprow .tr { position:relative; height:14px; background: linear-gradient(90deg, transparent 49.8%, var(--cx-track-bg) 49.8%, var(--cx-track-bg) 50.2%, transparent 50.2%); }
 .cx-shaprow .bar { position:absolute; top:1px; height:12px; border-radius:7px; }
 .cx-shaprow .val { font-size:13.5px; font-weight:600; font-variant-numeric: tabular-nums; }
-.cx-legend { display:flex; gap:18px; font-size:12.5px; color:#6B6F73; margin-top:8px; }
+.cx-legend { display:flex; gap:18px; font-size:12.5px; color:var(--cx-muted); margin-top:8px; }
 .cx-legend b { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:-1px; }
 
 /* ---------- pink glass card ---------- */
@@ -200,17 +268,17 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 
 /* ---------- other pages ---------- */
 .cx-models { display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:18px; }
-.cx-model { background:#fff; border-radius:28px; padding:22px 26px; box-shadow: 0 22px 44px -26px rgba(20,22,20,.30); position:relative; overflow:hidden; }
+.cx-model { background:var(--cx-card-bg); border-radius:28px; padding:22px 26px; box-shadow: 0 22px 44px -26px rgba(20,22,20,.30); position:relative; overflow:hidden; }
 .cx-model.best { color:#fff; background: linear-gradient(165deg, #9FDBF7 0%, #4FAEE6 48%, #2680C2 100%); box-shadow: 0 30px 50px -28px rgba(38,128,194,.7), inset 0 1px 0 rgba(255,255,255,.7); }
 .cx-model.best .cx-big { color:#fff; }
 .cx-model.best .cx-label, .cx-model.best .cx-big small, .cx-model.best .cx-note { color: rgba(255,255,255,.92); }
 .cx-model .cx-big { font-size:50px; }
-.cx-model .row { display:flex; justify-content:space-between; font-size:14px; padding:6px 0; border-top:1px solid rgba(120,120,120,.18); margin-top:6px; }
+.cx-model .row { display:flex; justify-content:space-between; font-size:14px; padding:6px 0; border-top:1px solid var(--cx-row-border); margin-top:6px; }
 .cx-model.best .row { border-color: rgba(255,255,255,.4); }
 .cx-badge { display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700; background:rgba(255,255,255,.3); border:1px solid rgba(255,255,255,.6); margin-bottom:6px; }
 .cx-hbar { display:grid; grid-template-columns: 170px 1fr 70px; align-items:center; gap:12px; padding:6px 0; font-size:14px; }
-.cx-hbar .tr { height:12px; background:#ECEDEF; border-radius:7px; position:relative; }
-.cx-hbar .f { position:absolute; left:0; top:0; bottom:0; border-radius:7px; background:#0F1110; }
+.cx-hbar .tr { height:12px; background:var(--cx-hbar-track); border-radius:7px; position:relative; }
+.cx-hbar .f { position:absolute; left:0; top:0; bottom:0; border-radius:7px; background:var(--cx-ink); }
 .cx-hbar .f.b { background: linear-gradient(90deg,#4FAEE6,#2680C2); }
 .cx-dark { background: linear-gradient(180deg,#141714 0%,#090A09 100%); color:#fff; border-radius:34px; padding:28px 32px; margin-top:18px;
   box-shadow: 0 40px 70px -40px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.07); }
@@ -220,7 +288,7 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 .cx-dbar .tr { height:14px; background:rgba(255,255,255,.08); border-radius:8px; position:relative; overflow:hidden; }
 .cx-dbar .f { position:absolute; left:0; top:0; bottom:0; border-radius:8px; background: linear-gradient(90deg,#7C9A18,#C5E04F); }
 .cx-dbar .v { font-size:13.5px; color:#C9CEC9; font-variant-numeric: tabular-nums; }
-.cx-warn { background: rgba(255,255,255,.7); border:1px solid rgba(15,17,16,.08); border-radius:22px; padding:16px 20px; font-size:14px; color:#3A3F3B; line-height:1.55; margin-top:16px; backdrop-filter: blur(12px); }
+.cx-warn { background: var(--cx-warn-bg); border:1px solid var(--cx-chip-border); border-radius:22px; padding:16px 20px; font-size:14px; color:var(--cx-warn-text); line-height:1.55; margin-top:16px; backdrop-filter: blur(12px); }
 .cx-rank { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:16px; margin-top:18px; }
 
 /* ---------- area / trend chart ---------- */
@@ -243,6 +311,48 @@ h1, h2, h3, h4 { color: #0F1110; letter-spacing: -0.02em; font-weight: 600; }
 @media (prefers-reduced-motion: no-preference) { .cx-strip i.mk { transition: all .3s ease; } }
 </style>
 """
+
+
+# Applies a saved (or system) theme to <html data-theme="..."> on load, and
+# wires up every .cx-theme-toggle button to flip + persist it. <html> lives
+# outside Streamlit's own React root, so the attribute survives reruns;
+# the singleton guard only needs to stop the click listener being attached
+# twice, same pattern as the rail-arrow scripts in landing.py / know_your_carbon.py.
+THEME_TOGGLE_JS = """<script>
+(function () {
+  function apply(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem('cx-theme', theme); } catch (e) {}
+  }
+  function current() {
+    try {
+      var saved = localStorage.getItem('cx-theme');
+      if (saved === 'light' || saved === 'dark') return saved;
+    } catch (e) {}
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  apply(current());
+  if (window.__cxTheme) return; window.__cxTheme = true;
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('.cx-theme-toggle');
+    if (!b) return;
+    var now = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    apply(now);
+  });
+})();
+</script>"""
+
+
+def theme_toggle():
+    """A small fixed, top-left sun/moon button. Install THEME_TOGGLE_JS once
+    per page (st.html(..., unsafe_allow_javascript=True)) for it to work."""
+    sun = ("<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' "
+           "stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.4'/>"
+           "<path d='M12 2.5v2.4M12 19.1v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7'/></svg>")
+    moon = ("<svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' "
+            "stroke-linecap='round' stroke-linejoin='round'><path d='M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z'/></svg>")
+    return (f"<button type='button' class='cx-theme-toggle' aria-label='Toggle dark mode'>"
+            f"<span class='sun'>{sun}</span><span class='moon'>{moon}</span></button>")
 
 
 def fmt(v, signed=False):

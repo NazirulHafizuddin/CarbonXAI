@@ -24,6 +24,8 @@ import landing
 import know_your_carbon
 
 st.markdown(ui.CSS, unsafe_allow_html=True)
+st.markdown(ui.theme_toggle(), unsafe_allow_html=True)
+st.html(ui.THEME_TOGGLE_JS, unsafe_allow_javascript=True)
 
 
 # ─────────────────────────── artifacts ───────────────────────────

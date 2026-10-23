@@ -184,6 +184,16 @@ def _photo(key):
     return None
 
 
+def _card_img(filename):
+    """Base64 data URI for a file in assets/, used as a lp-card background photo.
+    Returns None (plain colour card) if the file is missing, same fallback rule
+    as know_your_carbon.py's _img()."""
+    path = os.path.join("assets", filename)
+    if os.path.exists(path):
+        return _photo_uri(path, os.path.getmtime(path))
+    return None
+
+
 # ═════════════════════════════ STYLE ═════════════════════════════
 LANDING_CSS = """
 <style>
@@ -208,13 +218,13 @@ LANDING_CSS = """
 .dark .lp-eyebrow, .lp-eyebrow.on-dark { color:#C5E04F; }
 .lp-h1 { font-size: clamp(38px, 5vw, 68px); font-weight:700 !important; line-height:1.0; letter-spacing:-.045em; text-wrap:balance; margin:14px 0 18px 0; color:#fff; }
 .lp-h1 b { font-weight:600; color:#C5E04F; }
-.lp-h2 { font-size: clamp(32px, 4.2vw, 58px); font-weight:700 !important; line-height:1.06; letter-spacing:-.035em; text-wrap:balance; margin:10px 0 10px 0; color:#0F1110; max-width: 20ch; }
+.lp-h2 { font-size: clamp(32px, 4.2vw, 58px); font-weight:700 !important; line-height:1.06; letter-spacing:-.035em; text-wrap:balance; margin:10px 0 10px 0; color:var(--cx-ink); max-width: 20ch; }
 .lp-h2.wide { max-width: 24ch; }
 .lp-h2.on-dark { color:#fff; }
-.lp-lead { font-size: clamp(16px, 1.45vw, 20px); line-height:1.55; max-width:56ch; color:#5A5F63; margin:0; text-wrap:pretty; font-weight:400; }
+.lp-lead { font-size: clamp(16px, 1.45vw, 20px); line-height:1.55; max-width:56ch; color:var(--cx-muted); margin:0; text-wrap:pretty; font-weight:400; }
 .lp-lead.on-dark { color: rgba(255,255,255,.74); }
-.lp-hint { font-size:13.5px; color:#7A7E82; display:flex; align-items:center; gap:8px; margin:6px 0 10px 0; }
-.lp-fine { margin-top:18px; font-size:12.5px; color:#6B6F73; line-height:1.5; max-width:70ch; }
+.lp-hint { font-size:13.5px; color:var(--cx-muted-2); display:flex; align-items:center; gap:8px; margin:6px 0 10px 0; }
+.lp-fine { margin-top:18px; font-size:12.5px; color:var(--cx-muted); line-height:1.5; max-width:70ch; }
 
 /* ---------- hero extras ---------- */
 .lp-stats { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
@@ -228,12 +238,12 @@ LANDING_CSS = """
 
 /* ---------- fixed top menu ---------- */
 .st-key-lp_nav { position:fixed; top:14px; left:50%; transform:translateX(-50%); width:min(1180px, calc(100vw - 28px)); z-index:999;
-  padding:6px 8px 6px 18px; border-radius:999px; background:rgba(255,255,255,.92); border:1px solid rgba(15,17,16,.08);
+  padding:6px 8px 6px 18px; border-radius:999px; background:var(--cx-nav-bg); border:1px solid var(--cx-nav-border);
   backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5); box-shadow:0 16px 40px -22px rgba(0,0,0,.45); }
 .st-key-lp_nav [data-testid="stHorizontalBlock"] { align-items:center; gap:8px; }
 .lp-links { display:flex; justify-content:center; gap:4px; flex-wrap:wrap; }
-.lp-links a { padding:8px 14px; border-radius:999px; font-size:14px; font-weight:600; color:#2A2E2B !important; text-decoration:none !important; transition:background .2s; }
-.lp-links a:hover { background:rgba(15,17,16,.07); }
+.lp-links a { padding:8px 14px; border-radius:999px; font-size:14px; font-weight:600; color:var(--cx-ink) !important; text-decoration:none !important; transition:background .2s; }
+.lp-links a:hover { background:rgba(127,130,127,.16); }
 
 /* ---------- pills and buttons ---------- */
 .lp-pill { display:inline-flex; align-items:center; gap:10px; padding:14px 26px; border-radius:999px; font-weight:700; font-size:16px;
@@ -247,7 +257,7 @@ LANDING_CSS = """
 [class*="st-key-lpb_ghost"] button, [class*="st-key-lpb_ghost"] a { background:rgba(255,255,255,.10) !important; color:#fff !important; border:1px solid rgba(255,255,255,.42) !important; backdrop-filter: blur(10px); }
 [class*="st-key-lpb_ghost"] button:hover:not(:disabled) { background:rgba(255,255,255,.2) !important; }
 [class*="st-key-lpb_dark"] button, [class*="st-key-lpb_dark"] a { background:#0F1110 !important; color:#fff !important; border:1px solid #0F1110 !important; }
-[class*="st-key-lpb_line"] button, [class*="st-key-lpb_line"] a { background:rgba(255,255,255,.7) !important; color:#0F1110 !important; border:1px solid rgba(15,17,16,.18) !important; }
+[class*="st-key-lpb_line"] button, [class*="st-key-lpb_line"] a { background:var(--cx-chip-bg) !important; color:var(--cx-ink) !important; border:1px solid var(--cx-chip-border) !important; }
 [class*="st-key-lpb_line"] button:hover:not(:disabled) { background:#0F1110 !important; color:#fff !important; }
 [class*="st-key-lpb_lime"] button, [class*="st-key-lpb_lime"] a { background:#C5E04F !important; color:#0F1110 !important; border:1px solid #C5E04F !important; }
 [class*="st-key-lpb_"] button:disabled { opacity:.55; cursor:not-allowed; }
@@ -265,9 +275,9 @@ LANDING_CSS = """
   scrollbar-color: rgba(15,17,16,.55) rgba(15,17,16,.08); -webkit-overflow-scrolling:touch; overscroll-behavior-x: contain; }
 .lp-rail::-webkit-scrollbar { height:6px; } .lp-rail::-webkit-scrollbar-track { background:rgba(15,17,16,.08); border-radius:6px; }
 .lp-rail::-webkit-scrollbar-thumb { background:rgba(15,17,16,.5); border-radius:6px; }
-.lp-card { flex:0 0 min(80vw, 330px); min-height:310px; scroll-snap-align:start; border-radius:30px; padding:26px; background:#fff; position:relative;
-  box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 24px 44px -28px rgba(20,22,20,.35); transition: transform .35s ease, box-shadow .35s ease; display:flex; flex-direction:column; }
-.lp-card:hover { transform:translateY(-6px); box-shadow: 0 1px 0 rgba(255,255,255,.9) inset, 0 34px 54px -26px rgba(20,22,20,.42); }
+.lp-card { flex:0 0 min(80vw, 330px); min-height:310px; scroll-snap-align:start; border-radius:30px; padding:26px; background:var(--cx-card-bg); color:var(--cx-ink); position:relative;
+  box-shadow: 0 1px 0 var(--cx-card-shadow-inset) inset, 0 24px 44px -28px rgba(20,22,20,.35); transition: transform .35s ease, box-shadow .35s ease; display:flex; flex-direction:column; }
+.lp-card:hover { transform:translateY(-6px); box-shadow: 0 1px 0 var(--cx-card-shadow-inset) inset, 0 34px 54px -26px rgba(20,22,20,.42); }
 .lp-card.dark { background:linear-gradient(180deg,#171A17,#0C0E0C); color:#fff; }
 .lp-card.lime { background:linear-gradient(160deg,#DCEF86,#B4D13C); }
 .lp-card.pink { background:linear-gradient(165deg,#FFB6CD,#FF5088); color:#fff; }
@@ -276,7 +286,7 @@ LANDING_CSS = """
 .lp-card.teal { background:linear-gradient(165deg,#7FE8D0,#15876E); color:#fff; }
 .lp-card.violet { background:linear-gradient(165deg,#C7C3FF,#5B4BC4); color:#fff; }
 .lp-card.wide { flex-basis:min(86vw, 400px); }
-.lp-card .ic { width:54px; height:54px; border-radius:17px; display:grid; place-items:center; background:rgba(15,17,16,.06); color:#0F1110; }
+.lp-card .ic { width:54px; height:54px; border-radius:17px; display:grid; place-items:center; background:var(--cx-icon-bg); color:var(--cx-ink); }
 .lp-card.dark .ic, .lp-card.pink .ic, .lp-card.green .ic, .lp-card.blue .ic, .lp-card.teal .ic, .lp-card.violet .ic { background:rgba(255,255,255,.16); color:#fff; }
 .lp-card.lime .ic { background:rgba(15,17,16,.10); }
 .lp-card .tag { margin-top:auto; font-size:12.5px; letter-spacing:.12em; text-transform:uppercase; font-weight:700; opacity:.55; }
@@ -284,12 +294,21 @@ LANDING_CSS = """
 .lp-card p { font-size:15.5px; line-height:1.55; margin:0 0 18px 0; color:inherit; opacity:.82; }
 .lp-card.dark h3, .lp-card.pink h3, .lp-card.green h3, .lp-card.blue h3, .lp-card.teal h3, .lp-card.violet h3 { color:#fff; }
 
+.lp-card.photo { color:#fff; background-size:cover; background-position:center; background-color:#0C0E0C; overflow:hidden; }
+.lp-card.photo::before { content:""; position:absolute; inset:0; border-radius:inherit;
+  background:linear-gradient(180deg, rgba(8,11,9,.90) 0%, rgba(8,11,9,.42) 46%, rgba(8,11,9,.06) 76%); }
+.lp-card.photo > * { position:relative; z-index:1; }
+.lp-card.photo .ic { background:rgba(255,255,255,.22); color:#fff; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.lp-card.photo h3, .lp-card.photo p, .lp-card.photo .tag { color:#fff; }
+
 
 /* ---------- rail arrows (Apple-style round buttons) ---------- */
 .lp-arrows { display:flex; justify-content:flex-end; gap:12px; margin-top:4px; }
 .lp-arrow { width:44px; height:44px; border-radius:50%; border:0; display:grid; place-items:center; cursor:pointer; padding:0;
-  background:rgba(15,17,16,.10); color:#0F1110; transition: background .2s, transform .2s, opacity .2s; }
+  background:var(--cx-pill-bg); color:var(--cx-pill-text); transition: background .2s, transform .2s, opacity .2s; }
 .lp-arrow:hover:not(:disabled) { background:#0F1110; color:#fff; transform:scale(1.06); }
+:root[data-theme="dark"] .lp-arrow:hover:not(:disabled) { background:#C5E04F; color:#0F1110; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lp-arrow:hover:not(:disabled) { background:#C5E04F; color:#0F1110; } }
 .lp-arrow:focus-visible { outline:2px solid #6F9A12; outline-offset:2px; }
 .lp-arrow:disabled { opacity:.35; cursor:default; }
 .lp-arrow svg { width:20px; height:20px; }
@@ -478,8 +497,15 @@ _ARROW_JS = """<script>
 </script>"""
 
 
-def _card(kind, ic, title, text, tag=""):
+def _card(kind, ic, title, text, tag="", photo=None):
     tag_html = f"<span class='tag'>{escape(tag)}</span>" if tag else ""
+    if photo:
+        img = _card_img(photo)
+        if img:
+            kind = (kind + " photo").strip()
+            return (f"<article class='lp-card {kind}' style=\"background-image:url('{img}')\">"
+                    f"<span class='ic'>{icon(ic)}</span><h3>{escape(title)}</h3>"
+                    f"<p>{escape(text)}</p>{tag_html}</article>")
     return (f"<article class='lp-card {kind}'><span class='ic'>{icon(ic)}</span><h3>{escape(title)}</h3>"
             f"<p>{escape(text)}</p>{tag_html}</article>")
 
@@ -488,17 +514,26 @@ def _about():
     with st.container(key="lpsec_about"):
         cards = [
             _card("dark wide", "co2", "Carbon emissions",
-                  "Carbon dioxide (CO₂) released into the air, mostly when we burn fuels such as petrol, diesel, coal and gas.", "The basics"),
+                  "Carbon dioxide (CO₂) released into the air, mostly when we burn fuels such as petrol, diesel, coal and gas.", "The basics",
+                  photo="lp_emission.jpg"),
             _card("lime wide", "heat", "Greenhouse gases",
-                  "CO₂, methane and nitrous oxide trap heat in the atmosphere. The more of them, the warmer the planet.", "The basics"),
+                  "CO₂, methane and nitrous oxide trap heat in the atmosphere. The more of them, the warmer the planet.", "The basics",
+                  photo="lp_greenhouse.jpg"),
             _card("pink wide", "foot", "Carbon footprint",
-                  "All the greenhouse gases linked to what one person does, counted in kg of CO₂e. CO₂e puts every gas on the same scale.", "The basics"),
-            _card("green", "car", "Transport", "Petrol and diesel vehicles release CO₂ from the tailpipe. Public transport, walking and cycling usually release less.", "Everyday source"),
-            _card("blue", "plane", "Air travel", "Flights burn large amounts of jet fuel, so even a few trips can add a lot to a footprint.", "Everyday source"),
-            _card("teal", "bolt", "Home energy", "Electricity and heating release CO₂ when they come from fossil fuels.", "Everyday source"),
-            _card("violet", "food", "Food", "Growing, moving and cooking food all release greenhouse gases, and some diets release more than others.", "Everyday source"),
-            _card("pink", "bag", "Shopping", "Making and shipping clothes and goods uses energy, so what and how often we buy matters.", "Everyday source"),
-            _card("green", "bin", "Waste", "Landfills release methane, and recycling can cut the energy needed to make new materials.", "Everyday source"),
+                  "All the greenhouse gases linked to what one person does, counted in kg of CO₂e. CO₂e puts every gas on the same scale.", "The basics",
+                  photo="lp_footprint.jpg"),
+            _card("green", "car", "Transport", "Petrol and diesel vehicles release CO₂ from the tailpipe. Public transport, walking and cycling usually release less.", "Everyday source",
+                  photo="kyc_traffic_card.jpg"),
+            _card("blue", "plane", "Air travel", "Flights burn large amounts of jet fuel, so even a few trips can add a lot to a footprint.", "Everyday source",
+                  photo="kyc_airtravel_card.jpg"),
+            _card("teal", "bolt", "Home energy", "Electricity and heating release CO₂ when they come from fossil fuels.", "Everyday source",
+                  photo="kyc_pylons_card.jpg"),
+            _card("violet", "food", "Food", "Growing, moving and cooking food all release greenhouse gases, and some diets release more than others.", "Everyday source",
+                  photo="kyc_food_card.jpg"),
+            _card("pink", "bag", "Shopping", "Making and shipping clothes and goods uses energy, so what and how often we buy matters.", "Everyday source",
+                  photo="kyc_shopping_card.jpg"),
+            _card("green", "bin", "Waste", "Landfills release methane, and recycling can cut the energy needed to make new materials.", "Everyday source",
+                  photo="kyc_landfill_card.jpg"),
         ]
         st.markdown(_h(f"""<span id='lp-about' class='lp-anchor'></span>
             <div class='lp-rise'><div class='lp-eyebrow'>01 &middot; The basics</div>
@@ -630,6 +665,8 @@ def render():
     st.markdown(ui.CSS, unsafe_allow_html=True)       # same fonts, background and brand as the dashboard
     st.markdown(LANDING_CSS, unsafe_allow_html=True)
     st.markdown(_section_css(), unsafe_allow_html=True)
+    st.markdown(ui.theme_toggle(), unsafe_allow_html=True)
+    st.html(ui.THEME_TOGGLE_JS, unsafe_allow_javascript=True)
     _nav()
     _hero()
     _about()
@@ -641,12 +678,12 @@ def render():
 
 def feedback_footer():
     """Slim feedback band for the bottom of the dashboard pages."""
-    st.markdown("<style>.lp-dashfoot{margin-top:30px;padding:20px 26px;border-radius:28px;background:rgba(255,255,255,.7);"
-                "border:1px solid rgba(15,17,16,.08);backdrop-filter:blur(12px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}"
-                ".lp-dashfoot b{font-size:17px;font-weight:600}.lp-dashfoot span{color:#6B6F73;font-size:14px}"
+    st.markdown("<style>.lp-dashfoot{margin-top:30px;padding:20px 26px;border-radius:28px;background:var(--cx-warn-bg);"
+                "border:1px solid var(--cx-chip-border);backdrop-filter:blur(12px);display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--cx-ink)}"
+                ".lp-dashfoot b{font-size:17px;font-weight:600}.lp-dashfoot span{color:var(--cx-muted);font-size:14px}"
                 "[class*='st-key-lpb_dashfb'] button,[class*='st-key-lpb_dashfb'] a{border-radius:999px!important;padding:10px 22px!important;font-weight:700!important}"
                 "[class*='st-key-lpb_dashfb'] button:disabled{opacity:.6}[class*='st-key-lpb_dashfb_lime'] button,[class*='st-key-lpb_dashfb_lime'] a{background:#C5E04F!important;color:#0F1110!important;border:1px solid #C5E04F!important}"
-                "[class*='st-key-lpb_dashfb_line'] a{background:rgba(255,255,255,.8)!important;color:#0F1110!important;border:1px solid rgba(15,17,16,.18)!important}"
+                "[class*='st-key-lpb_dashfb_line'] a{background:var(--cx-chip-bg)!important;color:var(--cx-ink)!important;border:1px solid var(--cx-chip-border)!important}"
                 "[class*='st-key-dashback_wrap'] a{justify-content:flex-end!important;display:flex!important}"
                 "</style>"
                 "<div class='lp-dashfoot'><b>Tried CarbonXAI?</b><span>Tell us what worked and what did not. It is part of the user acceptance test.</span></div>",
