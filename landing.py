@@ -211,6 +211,11 @@ LANDING_CSS = """
   width: calc(100% - 28px); margin: 14px; border-radius: 40px; overflow: hidden; }
 .st-key-lpsec_hero, .st-key-lpsec_why, .st-key-lpsec_feedback { color:#fff; background-color:#0B0F0C; }
 .st-key-lpsec_action { background: linear-gradient(160deg, #EEF6C9 0%, #DCEB9B 55%, #C5E04F 130%); }
+/* this section is always a fixed lime gradient (never flips dark), so its
+   heading and outline button must stay fixed-dark too, regardless of theme */
+.st-key-lpsec_action .lp-h2 { color:#0F1110 !important; }
+.st-key-lpsec_action [class*="st-key-lpb_line"] button { background:rgba(255,255,255,.75) !important; color:#0F1110 !important; border:1px solid rgba(15,17,16,.18) !important; }
+.st-key-lpsec_action [class*="st-key-lpb_line"] button:hover:not(:disabled) { background:#0F1110 !important; color:#fff !important; }
 [class*="st-key-lpsec_"] [data-testid="stElementContainer"] { width:100%; }
 
 /* ---------- type ---------- */
@@ -685,6 +690,8 @@ def feedback_footer():
                 "[class*='st-key-lpb_dashfb'] button:disabled{opacity:.6}[class*='st-key-lpb_dashfb_lime'] button,[class*='st-key-lpb_dashfb_lime'] a{background:#C5E04F!important;color:#0F1110!important;border:1px solid #C5E04F!important}"
                 "[class*='st-key-lpb_dashfb_line'] a{background:var(--cx-chip-bg)!important;color:var(--cx-ink)!important;border:1px solid var(--cx-chip-border)!important}"
                 "[class*='st-key-dashback_wrap'] a{justify-content:flex-end!important;display:flex!important}"
+                "[class*='st-key-dashback_wrap'] a,[class*='st-key-dashback_wrap'] a *,"
+                "[class*='st-key-dashback_wrap'] [data-testid='stIconMaterial']{color:var(--cx-ink)!important;fill:var(--cx-ink)!important}"
                 "</style>"
                 "<div class='lp-dashfoot'><b>Tried CarbonXAI?</b><span>Tell us what worked and what did not. It is part of the user acceptance test.</span></div>",
                 unsafe_allow_html=True)
